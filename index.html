@@ -1342,6 +1342,10 @@
       <input type="text" id="newSubjectEmoji" placeholder="e.g. ⚛ or φ or just leave blank" style="max-width:260px;">
     </div>
     <div class="modal-field">
+      <label>Subject Colour</label>
+      <div id="addSubjectColorPicker" style="display:flex;gap:7px;flex-wrap:wrap;margin-top:2px;"></div>
+    </div>
+    <div class="modal-field">
       <label>Week 1 Outcomes (optional)</label>
       <textarea id="newSubjectOutcomes" placeholder="One outcome per line...&#10;You can also add weeks later."></textarea>
       <div class="field-hint">Paste your learning outcomes, one per line. You can edit them anytime.</div>
@@ -2391,7 +2395,26 @@ function filterItems() {
 }
 
 // ── SUBJECT MODAL ──
+let _addSubjectColor = null;
+
 function openSubjectModal() {
+  const subjectCount = Object.keys(SUBJECTS).length;
+  _addSubjectColor = WEEK_COLORS[subjectCount % WEEK_COLORS.length];
+
+  // Build colour picker
+  const picker = document.getElementById('addSubjectColorPicker');
+  picker.innerHTML = '';
+  WEEK_COLORS.forEach(c => {
+    const sw = document.createElement('div');
+    sw.className = 'color-swatch' + (c === _addSubjectColor ? ' selected' : '');
+    sw.style.background = c;
+    sw.onclick = () => {
+      _addSubjectColor = c;
+      picker.querySelectorAll('.color-swatch').forEach(s => s.classList.toggle('selected', s === sw));
+    };
+    picker.appendChild(sw);
+  });
+
   document.getElementById('subjectModal').classList.add('open');
   document.getElementById('newSubjectName').focus();
 }
@@ -2400,6 +2423,7 @@ function closeSubjectModal() {
   document.getElementById('newSubjectName').value = '';
   document.getElementById('newSubjectEmoji').value = '';
   document.getElementById('newSubjectOutcomes').value = '';
+  _addSubjectColor = null;
 }
 function submitNewSubject() {
   const name = document.getElementById('newSubjectName').value.trim();
@@ -2408,7 +2432,7 @@ function submitNewSubject() {
   const outcomesRaw = document.getElementById('newSubjectOutcomes').value.trim();
   const items = outcomesRaw ? outcomesRaw.split('\n').map(l=>l.trim()).filter(Boolean) : [];
   const id = 'sub_' + Date.now();
-  const color = WEEK_COLORS[Object.keys(SUBJECTS).length % WEEK_COLORS.length];
+  const color = _addSubjectColor || WEEK_COLORS[Object.keys(SUBJECTS).length % WEEK_COLORS.length];
   SUBJECTS[id] = {
     name, emoji, color,
     weeks: items.length > 0 ? [{
