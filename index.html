@@ -1057,6 +1057,65 @@
     justify-content: center;
   }
   .modal-overlay.open { display: flex; }
+
+  /* Delete confirm modal */
+  .confirm-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--rlg);
+    padding: 1.75rem 1.5rem 1.5rem;
+    max-width: 380px;
+    width: calc(100% - 2rem);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  }
+  .confirm-icon {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: #fee2e2;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  .confirm-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+  .confirm-body {
+    font-size: 0.72rem;
+    color: var(--text-3);
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+  }
+  .confirm-body strong { color: var(--text-2); font-weight: 500; }
+  .confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .confirm-cancel {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 7px 16px;
+    border-radius: var(--r);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .confirm-cancel:hover { border-color: var(--border-hi); color: var(--text); }
+  .confirm-delete {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 7px 16px;
+    border-radius: var(--r);
+    border: 1px solid #fecaca;
+    background: #fee2e2;
+    color: var(--red);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .confirm-delete:hover { background: #fecaca; border-color: #fca5a5; }
   .modal-box {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -2503,23 +2562,23 @@ function _doDeleteWeek(wNum) {
   const week = weeks.find(w => w.num === wNum);
   if (!week) return;
   const outcomeCount = week.items.length;
-  const msg = outcomeCount > 0
-    ? `Delete "${week.label}"?\n\nThis will permanently remove ${outcomeCount} outcome${outcomeCount!==1?'s':''} and all their progress data.`
-    : `Delete "${week.label}"?`;
-  if (!confirm(msg)) return;
-  // remove week from subject
+  const title = `Delete "${week.label}"?`;
+  const body = outcomeCount > 0
+    ? `This will permanently remove <strong>${outcomeCount} outcome${outcomeCount!==1?'s':''}</strong> and all their progress data. This cannot be undone.`
+    : `This week has no outcomes. It will be permanently removed.`;
+  openDeleteConfirm(title, body, () => _executeDeleteWeek(wNum));
+}
+
+function _executeDeleteWeek(wNum) {
   const sub = getCurrentSubject();
   sub.weeks = sub.weeks.filter(w => w.num !== wNum);
-  // remove all state for this week
   const st = getSubjectState();
   Object.keys(st).forEach(k => {
     if (k.startsWith(`w${wNum}_`)) delete st[k];
   });
   allState[currentSubjectId] = st;
   saveState();
-  // close modal if open
   document.getElementById('editWeekModal').classList.remove('open');
-  // if we were viewing the deleted week, go to all
   if (currentWeek === String(wNum)) currentWeek = 'all';
   rebuildWeekNav();
   buildUI();
@@ -2608,7 +2667,19 @@ function submitEditItem() {
 }
 function deleteItem(w, i, e) {
   e.stopPropagation();
-  if (!confirm('Delete this outcome?')) return;
+  const weeks = getCurrentWeeks();
+  const week = weeks.find(wk => wk.num === w);
+  if (!week) return;
+  const text = week.items[i] || 'this outcome';
+  const shortText = text.length > 60 ? text.slice(0, 60) + '…' : text;
+  openDeleteConfirm(
+    'Delete outcome?',
+    `<strong>"${shortText}"</strong> and all its progress data will be permanently removed.`,
+    () => _executeDeleteItem(w, i)
+  );
+}
+
+function _executeDeleteItem(w, i) {
   const weeks = getCurrentWeeks();
   const week = weeks.find(wk => wk.num === w);
   if (!week) return;
@@ -3162,10 +3233,42 @@ setInterval(rotateQuote, 30000);
     if (btn) btn.classList.add('visible');
   }
 
+// ── DELETE CONFIRM MODAL ──
+let _deleteConfirmCallback = null;
+
+function openDeleteConfirm(title, body, onConfirm) {
+  _deleteConfirmCallback = onConfirm;
+  document.getElementById('deleteConfirmTitle').textContent = title;
+  document.getElementById('deleteConfirmBody').innerHTML = body;
+  document.getElementById('deleteConfirmBtn').onclick = () => {
+    closeDeleteConfirm();
+    if (_deleteConfirmCallback) _deleteConfirmCallback();
+  };
+  document.getElementById('deleteConfirmModal').classList.add('open');
+}
+
+function closeDeleteConfirm() {
+  document.getElementById('deleteConfirmModal').classList.remove('open');
+  _deleteConfirmCallback = null;
+}
+
   } catch(_) { /* PWA init failed silently — app still fully functional */ }
 })();
 
 </script>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="deleteConfirmModal" onclick="if(event.target===this)closeDeleteConfirm()">
+  <div class="confirm-modal">
+    <div class="confirm-icon">🗑</div>
+    <div class="confirm-title" id="deleteConfirmTitle">Delete week?</div>
+    <div class="confirm-body" id="deleteConfirmBody"></div>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" onclick="closeDeleteConfirm()">Cancel</button>
+      <button class="confirm-delete" id="deleteConfirmBtn">Delete</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
