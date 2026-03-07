@@ -416,9 +416,9 @@
     <div style="font-size:0.7rem;color:var(--text-3);margin-top:0.5rem;">track · rate · reflect · complete</div>
     <div class="doc-meta">
       <div>Current file &nbsp;<span>math_course_tracker_28.html</span></div>
-      <div>Sessions &nbsp;<span>2</span></div>
-      <div>Versions &nbsp;<span>v21 → v28</span></div>
-      <div>Last updated &nbsp;<span>Session 2</span></div>
+      <div>Sessions &nbsp;<span>2 + hotfix</span></div>
+      <div>Versions &nbsp;<span>v21 → v28 + PWA fix</span></div>
+      <div>Last updated &nbsp;<span>Session 2 hotfix</span></div>
     </div>
     <div class="rating-badge">
       <div class="rating-num">9.4</div>
@@ -480,7 +480,7 @@
         <tr><td>⋯ context menu on weeks</td><td><span class="pill pill-done">✓ Done</span></td><td>Always-visible ··· button — Edit / + Add Outcome / 🗑 Delete, smart viewport positioning</td></tr>
         <tr><td>Inline add outcome</td><td><span class="pill pill-done">✓ Done</span></td><td>Pinned input at bottom of week, Enter to keep adding, Esc to dismiss</td></tr>
         <tr><td>Colour picker in Add Week</td><td><span class="pill pill-done">✓ Done</span></td><td>8-swatch component, pre-selects next colour in rotation</td></tr>
-        <tr><td>PWA install</td><td><span class="pill pill-done">✓ Done</span></td><td>Inline manifest + SW blob + LT monogram icons + iOS fallback toast</td></tr>
+        <tr><td>PWA install</td><td><span class="pill pill-done">✓ Done</span></td><td>External manifest.json + SVG icons + SW blob + install button — confirmed working in Ulaa/Chrome</td></tr>
         <tr><td>Delete week confirm modal</td><td><span class="pill pill-next">→ Next</span></td><td>Replace native confirm() with styled in-app modal</td></tr>
         <tr><td>Colour picker in Add Subject</td><td><span class="pill pill-next">→ Next</span></td><td>Inconsistent — Edit Week and Add Week both have it, Add Subject doesn't</td></tr>
       </tbody>
@@ -631,9 +631,24 @@
       </div>
     </div>
 
-  </div>
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-orange">v28.1</span>
+        <span class="version-name">PWA hotfix — external manifest + real icon files</span>
+        <span class="version-file">index.html + manifest.json + icons</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li><strong>Root cause:</strong> browsers reject <code>start_url</code> from both <code>data:</code> URI and <code>blob:</code> URL manifests — neither is treated as same-origin, so the PWA install prompt never fires</li>
+          <li><strong>Fix: external <code>manifest.json</code> file</strong> — moved manifest out of the JS entirely into a real file in the repo; <code>&lt;link rel="manifest" href="/learning-tracker/manifest.json"&gt;</code> hardcoded in <code>&lt;head&gt;</code></li>
+          <li><strong>Real SVG icon files</strong> — <code>icon-192.svg</code> and <code>icon-512.svg</code> added to repo; same LT monogram design as the runtime-generated versions, now served as static files referenced by manifest</li>
+          <li><strong>Added <code>mobile-web-app-capable</code> meta tag</strong> — alongside existing <code>apple-mobile-web-app-capable</code>; fixes deprecation warning in Chromium devtools</li>
+          <li><strong>Repo now has 4 files:</strong> <code>index.html</code>, <code>manifest.json</code>, <code>icon-192.svg</code>, <code>icon-512.svg</code> — PWA install prompt confirmed working in Ulaa (Chromium)</li>
+        </ul>
+      </div>
+    </div>
 
-  <!-- Next Session -->
+  </div>
   <div class="section" id="next-session">
     <div class="section-label">Planned</div>
     <div class="section-title">Next session — 3 quick wins + 1 fix</div>
@@ -959,8 +974,7 @@
 - ⋯ context menu on week headers (always visible): ✏ Edit / + Add Outcome / 🗑 Delete
 - Inline Add Outcome: pinned input at bottom of week list, Enter adds + stays focused, Esc dismisses
 - `buildItemInnerHTML()` shared helper used by full rebuild and inline-add partial refresh
-- PWA: inline manifest (data URI), SW via Blob URL, LT monogram icons, Install button in bottom bar
-- PWA install button: Chrome/Android shows on beforeinstallprompt; iOS always shows with toast fallback
+- PWA: external manifest.json + icon-192.svg + icon-512.svg in repo; SW via Blob URL; install button in bottom bar — confirmed working in Ulaa/Chrome
 - Queue panel (Need Help / To Review) hidden on mobile — needs fix next session
 - <span class="pv">Current rating: 9.4/10</span>
 
