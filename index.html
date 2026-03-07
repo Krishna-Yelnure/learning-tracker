@@ -84,6 +84,55 @@
   h1 em { font-style: italic; color: var(--text-2); }
   .header-sub { font-size: 0.68rem; color: var(--text-3); margin-top: 0.5rem; letter-spacing: 0.06em; }
 
+  /* Streak badge */
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    color: var(--text-2);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    margin-top: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.2s;
+  }
+  .streak-badge.active { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+  .streak-badge .streak-num { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 400; color: var(--text); }
+  .streak-badge.active .streak-num { color: #b45309; }
+
+  /* Exam countdown */
+  .exam-countdown {
+    font-size: 0.65rem;
+    color: var(--text-3);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 3px;
+    cursor: pointer;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .exam-countdown:hover { color: var(--text-2); }
+  .exam-countdown.urgent { color: #d97706; }
+  .exam-countdown.critical { color: var(--red); font-weight: 500; }
+  .exam-set-btn {
+    font-size: 0.6rem;
+    color: var(--text-3);
+    background: none;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.15s;
+    margin-top: 4px;
+    display: inline-block;
+  }
+  .exam-set-btn:hover { border-color: var(--border-hi); color: var(--text-2); }
+
   .header-right { display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0; }
   .overall-pct {
     font-family: 'Fraunces', serif;
@@ -1201,6 +1250,10 @@
     <div class="eyebrow">Learning Tracker &nbsp;/&nbsp; <span id="eyebrowSubject">Mathematics</span></div>
     <h1 id="headerTitle">Math <em>Mastery</em></h1>
     <div class="header-sub">track &middot; rate &middot; reflect &middot; complete</div>
+    <div class="streak-badge" id="streakBadge">
+      🔥 <span class="streak-num" id="streakNum">0</span> day streak
+    </div>
+    <div id="examCountdownWrap" style="margin-top:4px;"></div>
   </div>
   <div class="header-right">
     <div class="overall-pct" id="overallPct">0<sup>%</sup></div>
@@ -1870,6 +1923,8 @@ function switchSubject(id) {
   updateStats();
   showWeek('all');
   rotateQuote();
+  updateStreakDisplay();
+  updateExamCountdown();
 }
 
 // DATA shim so existing functions work
@@ -2144,7 +2199,7 @@ function toggleDone(w, i, e) {
   const cbEl = document.getElementById(`cb-w${w}-${i}`);
   if (itemEl) itemEl.classList.toggle('completed', ist.done);
   if (cbEl) cbEl.classList.toggle('checked', ist.done);
-  if (ist.done) showXPPop(w, i);
+  if (ist.done) { showXPPop(w, i); recordStudyActivity(); }
   updateStats();
   updateWeekHeader(w);
   checkWeekComplete(w);
@@ -3131,6 +3186,139 @@ updateStats();
 showWeek('all');
 rotateQuote();
 setInterval(rotateQuote, 30000);
+updateStreakDisplay();
+updateExamCountdown();
+// ── STREAK ──
+function getTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function loadStreak() {
+  try {
+    const s = localStorage.getItem('tracker_streak');
+    return s ? JSON.parse(s) : { count: 0, lastDay: null };
+  } catch(_) { return { count: 0, lastDay: null }; }
+}
+
+function saveStreak(streak) {
+  try { localStorage.setItem('tracker_streak', JSON.stringify(streak)); } catch(_) {}
+}
+
+function recordStudyActivity() {
+  const today = getTodayKey();
+  const streak = loadStreak();
+  if (streak.lastDay === today) return; // already recorded today
+  const yesterday = (() => {
+    const d = new Date(); d.setDate(d.getDate() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  })();
+  if (streak.lastDay === yesterday) {
+    streak.count += 1; // extend streak
+  } else {
+    streak.count = 1; // start fresh
+  }
+  streak.lastDay = today;
+  saveStreak(streak);
+  updateStreakDisplay();
+}
+
+function updateStreakDisplay() {
+  const streak = loadStreak();
+  const badge = document.getElementById('streakBadge');
+  const num = document.getElementById('streakNum');
+  if (!badge || !num) return;
+  num.textContent = streak.count;
+  badge.classList.toggle('active', streak.count > 0);
+  badge.title = streak.count > 0
+    ? `${streak.count} day${streak.count!==1?'s':''} in a row — last studied ${streak.lastDay}`
+    : 'No streak yet — complete an outcome to start one';
+}
+
+// ── EXAM COUNTDOWN ──
+function getExamDate(subjectId) {
+  try {
+    const dates = JSON.parse(localStorage.getItem('tracker_exam_dates') || '{}');
+    return dates[subjectId] || null;
+  } catch(_) { return null; }
+}
+
+function setExamDate(subjectId, dateStr) {
+  try {
+    const dates = JSON.parse(localStorage.getItem('tracker_exam_dates') || '{}');
+    if (dateStr) dates[subjectId] = dateStr;
+    else delete dates[subjectId];
+    localStorage.setItem('tracker_exam_dates', JSON.stringify(dates));
+  } catch(_) {}
+}
+
+function getDaysUntilExam(dateStr) {
+  if (!dateStr) return null;
+  const exam = new Date(dateStr + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  return Math.round((exam - today) / (1000 * 60 * 60 * 24));
+}
+
+function updateExamCountdown() {
+  const wrap = document.getElementById('examCountdownWrap');
+  if (!wrap) return;
+  const examDate = getExamDate(currentSubjectId);
+  const days = getDaysUntilExam(examDate);
+
+  if (days === null) {
+    wrap.innerHTML = `<button class="exam-set-btn" onclick="openExamModal()">+ set exam date</button>`;
+    return;
+  }
+
+  let cls = 'exam-countdown';
+  let msg = '';
+  if (days < 0) {
+    msg = `exam was ${Math.abs(days)} day${Math.abs(days)!==1?'s':''} ago`;
+    cls += '';
+  } else if (days === 0) {
+    msg = '⚠️ exam is today!';
+    cls += ' critical';
+  } else if (days <= 3) {
+    msg = `⚠️ exam in ${days} day${days!==1?'s':''}`;
+    cls += ' critical';
+  } else if (days <= 7) {
+    msg = `⏳ exam in ${days} days`;
+    cls += ' urgent';
+  } else {
+    msg = `⏳ exam in ${days} days`;
+  }
+
+  wrap.innerHTML = `<div class="${cls}" onclick="openExamModal()" title="Click to change exam date">${msg}</div>`;
+}
+
+function openExamModal() {
+  const sub = getCurrentSubject();
+  document.getElementById('examModalSubName').textContent = `Subject: ${sub.name}`;
+  const existing = getExamDate(currentSubjectId);
+  document.getElementById('examDateInput').value = existing || '';
+  document.getElementById('examClearBtn').style.display = existing ? '' : 'none';
+  document.getElementById('examDateModal').classList.add('open');
+}
+
+function closeExamModal() {
+  document.getElementById('examDateModal').classList.remove('open');
+}
+
+function submitExamDate() {
+  const val = document.getElementById('examDateInput').value;
+  if (!val) return;
+  setExamDate(currentSubjectId, val);
+  closeExamModal();
+  updateExamCountdown();
+}
+
+function clearExamDate() {
+  setExamDate(currentSubjectId, null);
+  closeExamModal();
+  updateExamCountdown();
+}
+
 // ── PWA ──
 (function initPWA() {
   try {
@@ -3280,6 +3468,23 @@ function closeDeleteConfirm() {
 })();
 
 </script>
+
+<!-- EXAM DATE MODAL -->
+<div class="modal-overlay" id="examDateModal" onclick="if(event.target===this)closeExamModal()">
+  <div class="modal-box" style="max-width:360px;">
+    <div class="modal-title">Set Exam Date</div>
+    <div style="font-size:0.72rem;color:var(--text-3);margin-bottom:1.25rem;line-height:1.6;" id="examModalSubName"></div>
+    <div class="modal-field">
+      <label>Exam Date</label>
+      <input type="date" id="examDateInput" style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeExamModal()">Cancel</button>
+      <button class="modal-cancel" onclick="clearExamDate()" style="color:var(--red);border-color:#fecaca;" id="examClearBtn">Clear</button>
+      <button class="modal-submit" onclick="submitExamDate()">Save</button>
+    </div>
+  </div>
+</div>
 
 <!-- DELETE CONFIRM MODAL -->
 <div class="modal-overlay" id="deleteConfirmModal" onclick="if(event.target===this)closeDeleteConfirm()">
