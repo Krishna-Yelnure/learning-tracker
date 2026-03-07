@@ -416,12 +416,12 @@
     <div style="font-size:0.7rem;color:var(--text-3);margin-top:0.5rem;">track · rate · reflect · complete</div>
     <div class="doc-meta">
       <div>Current file &nbsp;<span>index.html</span></div>
-      <div>Sessions &nbsp;<span>3</span></div>
-      <div>Versions &nbsp;<span>v21 → v29</span></div>
-      <div>Last updated &nbsp;<span>Session 3</span></div>
+      <div>Sessions &nbsp;<span>4</span></div>
+      <div>Versions &nbsp;<span>v21 → v30</span></div>
+      <div>Last updated &nbsp;<span>Session 4</span></div>
     </div>
     <div class="rating-badge">
-      <div class="rating-num">9.6</div>
+      <div class="rating-num">9.7</div>
       <div>
         <div class="rating-stars">★★★★★</div>
         <div style="font-size:0.55rem;color:var(--text-3);margin-top:1px;">current rating / 10</div>
@@ -435,6 +435,7 @@
     <a href="#" class="nav-link" onclick="navScrollTo('build-history',this);return false;">Session 1</a>
     <a href="#" class="nav-link" onclick="navScrollTo('build-history-s2',this);return false;">Session 2</a>
     <a href="#" class="nav-link" onclick="navScrollTo('build-history-s3',this);return false;">Session 3</a>
+    <a href="#" class="nav-link" onclick="navScrollTo('build-history-s4',this);return false;">Session 4</a>
     <a href="#" class="nav-link" onclick="navScrollTo('next-session',this);return false;">Next Session</a>
     <a href="#" class="nav-link" onclick="navScrollTo('roadmap',this);return false;">Full Roadmap</a>
     <a href="#" class="nav-link" onclick="navScrollTo('pwa',this);return false;">PWA Notes</a>
@@ -476,22 +477,24 @@
         <tr><td>Save / Load JSON</td><td><span class="pill pill-done">✓ Done</span></td><td>Full state export/import, works across devices</td></tr>
         <tr><td>Need Help / To Review queues</td><td><span class="pill pill-done">✓ Done</span></td><td>Tag outcomes, queue panel with confidence re-rating</td></tr>
         <tr><td>XP system</td><td><span class="pill pill-done">✓ Done</span></td><td>+10 XP per completed outcome, confetti on week complete</td></tr>
-        <tr><td>Mobile responsive</td><td><span class="pill pill-done">✓ Done</span></td><td>Bottom-sheet modals, 2×2 stats, toolbar compresses, queue hidden*</td></tr>
+        <tr><td>Mobile responsive</td><td><span class="pill pill-done">✓ Done</span></td><td>Bottom-sheet modals, 2×2 stats, toolbar compresses</td></tr>
         <tr><td>Queue on mobile</td><td><span class="pill pill-done">✓ Done</span></td><td>Second strip below toolbar, full-width buttons, badges synced to both rows</td></tr>
         <tr><td>⋯ context menu on weeks</td><td><span class="pill pill-done">✓ Done</span></td><td>Always-visible ··· button — Edit / + Add Outcome / 🗑 Delete, smart viewport positioning</td></tr>
         <tr><td>Inline add outcome</td><td><span class="pill pill-done">✓ Done</span></td><td>Pinned input at bottom of week, Enter to keep adding, Esc to dismiss</td></tr>
         <tr><td>Colour picker in Add Week</td><td><span class="pill pill-done">✓ Done</span></td><td>8-swatch component, pre-selects next colour in rotation</td></tr>
         <tr><td>PWA install</td><td><span class="pill pill-done">✓ Done</span></td><td>External manifest.json + SVG icons + SW blob + install button — confirmed working in Ulaa/Chrome</td></tr>
-        <tr><td>Delete week confirm modal</td><td><span class="pill pill-done">✓ Done</span></td><td>Styled in-app danger modal for week + outcome deletes; no more native confirm()</td></tr>
-        <tr><td>Colour picker in Add Subject</td><td><span class="pill pill-done">✓ Done</span></td><td>Same 8-swatch component, pre-selects by subject count — all 3 modals now consistent</td></tr>
-        <tr><td>Phase A — Habit layer</td><td><span class="pill pill-next">→ Next</span></td><td>🔥 Streak counter, ⏳ Exam countdown, 🍅 Pomodoro widget</td></tr>
+        <tr><td>Delete confirm modal</td><td><span class="pill pill-done">✓ Done</span></td><td>Styled in-app danger modal for week + outcome deletes; no more native confirm()</td></tr>
+        <tr><td>Colour picker in Add Subject</td><td><span class="pill pill-done">✓ Done</span></td><td>Same 8-swatch component, pre-selects by subject count — all 3 modals consistent</td></tr>
+        <tr><td>🔥 Streak counter</td><td><span class="pill pill-done">✓ Done</span></td><td>Daily streak in localStorage, amber badge in header, fires on toggleDone</td></tr>
+        <tr><td>⏳ Exam countdown</td><td><span class="pill pill-done">✓ Done</span></td><td>Per-subject date picker, header countdown with urgency colours (amber ≤7d, red ≤3d)</td></tr>
+        <tr><td>🍅 Pomodoro widget</td><td><span class="pill pill-next">→ Next</span></td><td>Floating draggable 25/5 timer, session log, unlocks study hours stat</td></tr>
       </tbody>
     </table>
   </div>
 
   <!-- Build History -->
   <div class="section" id="build-history">
-    <div class="section-label">Sessions 1 – 3</div>
+    <div class="section-label">Sessions 1 – 4</div>
     <div class="section-title">Build history</div>
 
     <div class="version-block">
@@ -665,10 +668,33 @@
       </div>
       <div class="version-body">
         <ul class="change-list">
-          <li><strong>Queue panel on mobile</strong> — added <code>.mobile-queue-row</code> strip directly below the toolbar; hidden on desktop, <code>display:flex</code> at ≤768px; Need Help and To Review buttons stretch full-width side by side; <code>updateQueueCounts()</code> now syncs both desktop and mobile badge spans; <code>querySelectorAll('.queue-btn')</code> already selected both rows so active state highlight works automatically</li>
-          <li><strong>Delete Week — styled confirm modal</strong> — replaced native <code>confirm()</code> with <code>#deleteConfirmModal</code>; shows week name and exact outcome count in a polished danger card; <code>openDeleteConfirm(title, body, callback)</code> is a generic helper reused for both week and outcome deletes; click-outside-to-dismiss on overlay; <code>_doDeleteWeek</code> split into two — one opens the modal, one executes on confirm</li>
-          <li><strong>Delete Outcome — same modal</strong> — <code>deleteItem()</code> now calls <code>openDeleteConfirm()</code> showing first 60 chars of outcome text; <code>_executeDeleteItem()</code> extracted to handle the actual splice + state key shift</li>
-          <li><strong>Colour picker in Add Subject modal</strong> — ported exact same 8-swatch <code>.color-swatch</code> component from Add Week modal; <code>_addSubjectColor</code> state variable mirrors <code>_addWeekColor</code> pattern; pre-selects <code>WEEK_COLORS[subjectCount % 8]</code> on open; reset to <code>null</code> on close; all 3 creation modals (Add Week, Edit Week, Add Subject) now have consistent colour picker UX</li>
+          <li><strong>Queue panel on mobile</strong> — added <code>.mobile-queue-row</code> strip directly below toolbar; hidden on desktop, <code>display:flex</code> at ≤768px; Need Help and To Review stretch full-width side by side; <code>updateQueueCounts()</code> syncs both desktop and mobile badge spans; active state works automatically via <code>querySelectorAll('.queue-btn')</code></li>
+          <li><strong>Delete Week — styled confirm modal</strong> — replaced native <code>confirm()</code> with <code>#deleteConfirmModal</code>; shows week name and exact outcome count; <code>openDeleteConfirm(title, body, callback)</code> is a generic reusable helper; click-outside-to-dismiss; <code>_doDeleteWeek</code> split into opener + <code>_executeDeleteWeek</code></li>
+          <li><strong>Delete Outcome — same modal</strong> — <code>deleteItem()</code> calls <code>openDeleteConfirm()</code> showing first 60 chars of outcome text; <code>_executeDeleteItem()</code> handles splice + state key shifting</li>
+          <li><strong>Colour picker in Add Subject modal</strong> — ported exact same 8-swatch <code>.color-swatch</code> component from Add Week; <code>_addSubjectColor</code> mirrors <code>_addWeekColor</code> pattern; pre-selects <code>WEEK_COLORS[subjectCount % 8]</code>; reset on close; all 3 creation modals now consistent</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Session 4 -->
+  <div class="section" id="build-history-s4">
+    <div class="section-label">Session 4</div>
+    <div class="section-title">Build history — session 4</div>
+
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-green">v30</span>
+        <span class="version-name">🔥 Streak counter + ⏳ Exam countdown</span>
+        <span class="version-file">index.html</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li><strong>🔥 Streak counter</strong> — <code>recordStudyActivity()</code> called in <code>toggleDone</code> when marking complete; stores <code>{ count, lastDay }</code> in <code>localStorage('tracker_streak')</code>; yesterday → extend, gap → reset to 1, same day → no-op; amber <code>.streak-badge</code> in header with Fraunces numeral; hover title shows last study date; <code>updateStreakDisplay()</code> called on init + subject switch</li>
+          <li><strong>⏳ Exam countdown per subject</strong> — stored in <code>localStorage('tracker_exam_dates')</code> keyed by subject ID, separate from subject data so it survives JSON export/import; header shows "+ set exam date" when unset; urgency tiers: grey (&gt;7 days), amber (≤7 days), red (≤3 days / today); clicking countdown reopens modal to edit or clear</li>
+          <li><strong>Exam date modal</strong> — standard <code>.modal-overlay</code> with date input, Save, Cancel, and Clear buttons; Clear hidden when no date is set; <code>openExamModal()</code> / <code>submitExamDate()</code> / <code>clearExamDate()</code> / <code>closeExamModal()</code></li>
+          <li><strong>Both features wired to subject switch + init</strong> — <code>switchSubject()</code> and page init both call <code>updateStreakDisplay()</code> and <code>updateExamCountdown()</code></li>
         </ul>
       </div>
     </div>
@@ -677,65 +703,74 @@
 
   <div class="section" id="next-session">
     <div class="section-label">Planned</div>
-    <div class="section-title">Next session — Phase A: Habit layer</div>
+    <div class="section-title">Next session — 🍅 Pomodoro widget</div>
 
     <div class="callout">
-      <strong>Attach:</strong> <code>index.html</code> — always the source of truth. Polish is complete; these features add daily engagement.
+      <strong>Attach:</strong> <code>index.html</code> — always the source of truth. This is the last Phase A item.
     </div>
 
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:1.25rem;">
 
       <div class="phase-block">
-        <div class="phase-header" style="background:#fef9c3;border-bottom-color:#fef08a;">
-          <div class="phase-num" style="background:#fef08a;color:#854d0e;">🔥</div>
-          <div class="phase-title">Streak counter</div>
-          <span class="pill pill-next" style="margin-left:auto;">Build first</span>
-        </div>
-        <div class="phase-body">
-          <div class="phase-items">
-            <div class="phase-item">
-              <span class="phase-icon">→</span>
-              <div class="phase-item-text">
-                <strong>Daily study streak stored in localStorage</strong>
-                <span>Consecutive days where at least one outcome was completed or rated. Visible in header. Resets at midnight if nothing was done that day.</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="phase-block">
-        <div class="phase-header" style="background:#fff7ed;border-bottom-color:#ffedd5;">
-          <div class="phase-num" style="background:#ffedd5;color:#9a3412;">⏳</div>
-          <div class="phase-title">Exam countdown per subject</div>
-          <span class="pill pill-next" style="margin-left:auto;">High urgency impact</span>
-        </div>
-        <div class="phase-body">
-          <div class="phase-items">
-            <div class="phase-item">
-              <span class="phase-icon">→</span>
-              <div class="phase-item-text">
-                <strong>Set exam date per subject — header shows days remaining</strong>
-                <span>e.g. "Maths exam in 14 days — 68% complete". Turns amber under 7 days, red under 3. Outcomes/day urgency score.</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="phase-block">
         <div class="phase-header" style="background:#fdf2f8;border-bottom-color:#fce7f3;">
           <div class="phase-num" style="background:#fce7f3;color:#9d174d;">🍅</div>
           <div class="phase-title">Pomodoro floating widget</div>
-          <span class="pill pill-planned" style="margin-left:auto;">Most complex</span>
+          <span class="pill pill-next" style="margin-left:auto;">Phase A final</span>
         </div>
         <div class="phase-body">
           <div class="phase-items">
             <div class="phase-item">
               <span class="phase-icon">→</span>
               <div class="phase-item-text">
-                <strong>25/5 floating timer, draggable, persists across week navigation</strong>
-                <span>Auto-links to current subject + week. After 4 sessions → 15 min long break. Session log stored: {subject, week, duration, timestamp}. Unlocks study hours stat.</span>
+                <strong>Floating draggable 25/5 timer, fixed position, survives week navigation</strong>
+                <span>Bottom-right by default. Drag to reposition. Minimises to a small pill when collapsed.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">→</span>
+              <div class="phase-item-text">
+                <strong>4-session cycle: 4 × 25 min → 15 min long break</strong>
+                <span>Visual session dots showing progress through the cycle. Optional audio cue on transition.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">→</span>
+              <div class="phase-item-text">
+                <strong>Session log stored per subject</strong>
+                <span><code>{ subject, week, duration, timestamp }</code> in localStorage — unlocks a Study Hours stat cell in the stats strip.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" style="background:#eff6ff;border-bottom-color:#dbeafe;">
+          <div class="phase-num" style="background:#dbeafe;color:#1e40af;">B</div>
+          <div class="phase-title">Phase B — Intelligence layer</div>
+          <span class="pill pill-planned" style="margin-left:auto;">After Pomodoro</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-items">
+            <div class="phase-item">
+              <span class="phase-icon">🔁</span>
+              <div class="phase-item-text">
+                <strong>Spaced repetition scheduler</strong>
+                <span>Low-confidence outcomes resurface sooner. Based on stars + last review date.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">📈</span>
+              <div class="phase-item-text">
+                <strong>Confidence sparklines</strong>
+                <span>Tiny trend line per week card showing confidence over time.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">🤖</span>
+              <div class="phase-item-text">
+                <strong>AI recall checker</strong>
+                <span>Claude API in the Recall tab — submit recall text, get feedback on accuracy and gaps.</span>
               </div>
             </div>
           </div>
@@ -969,26 +1004,26 @@
 - Inline Add Outcome: pinned input at bottom of week list, Enter adds + stays focused, Esc dismisses
 - `buildItemInnerHTML()` shared helper used by full rebuild and inline-add partial refresh
 - PWA: external manifest.json + icon-192.svg + icon-512.svg in repo; SW via Blob URL; install button
-- Queue panel (Need Help / To Review): visible on desktop toolbar + mobile strip below toolbar
-- `openDeleteConfirm(title, body, callback)` — generic confirm modal used for week + outcome deletes
-- <span class="pv">Current rating: 9.6/10</span>
+- Queue panel (Need Help / To Review): desktop toolbar + mobile strip below toolbar, both synced
+- `openDeleteConfirm(title, body, callback)` — generic confirm modal for week + outcome deletes
+- 🔥 Streak counter: `tracker_streak` localStorage, amber badge in header, fires on toggleDone
+- ⏳ Exam countdown: `tracker_exam_dates` per subject, urgency tiers (grey/amber/red), header display
+- <span class="pv">Current rating: 9.7/10</span>
 
-<span class="ph">**Next session build list — Phase A Habit layer:**</span>
-1. 🔥 Streak counter — daily streak in localStorage, shown in header, resets at midnight
-2. ⏳ Exam countdown per subject — set exam date, show days remaining + urgency colour
-3. 🍅 Pomodoro floating widget — 25/5 timer, draggable, session log, unlocks study hours stat
+<span class="ph">**Next session — Phase A final:**</span>
+- 🍅 Pomodoro floating widget: draggable, 25/5 timer, 4-session cycle, session log per subject, unlocks Study Hours stat
 
-<span class="ph">**After Phase A (brainstormed, not yet started):**</span>
-- Phase B (Intelligence): 🔁 Spaced repetition scheduler, 📈 Confidence sparklines, 📋 Auto weekly review
-- Phase C (Power): 🤖 AI recall checker (Claude API in Recall tab), 📊 Study analytics
+<span class="ph">**After Pomodoro (brainstormed, not yet started):**</span>
+- Phase B (Intelligence): 🔁 Spaced repetition scheduler, 📈 Confidence sparklines, 🤖 AI recall checker (Claude API)
+- Phase C (Power): 📊 Study analytics dashboard
 
 <span class="ph">**Instruction:**</span> [describe what you want to build or fix]</div>
   </div>
 
   <!-- Footer -->
   <div class="doc-footer">
-    <div>Learning Tracker Build Log &nbsp;·&nbsp; Session 3</div>
-    <div>v21 → v29 &nbsp;·&nbsp; Rating 9.6/10</div>
+    <div>Learning Tracker Build Log &nbsp;·&nbsp; Session 4</div>
+    <div>v21 → v30 &nbsp;·&nbsp; Rating 9.7/10</div>
   </div>
 
 </div>
