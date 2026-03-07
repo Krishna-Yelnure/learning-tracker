@@ -244,6 +244,19 @@
 
   /* queue buttons */
   .queue-group { display:flex; gap:6px; flex-shrink:0; margin-left:auto; }
+
+  /* Mobile queue row — shown only on mobile below toolbar */
+  .mobile-queue-row {
+    display: none;
+    padding: 0 1rem 0.55rem;
+    gap: 6px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-queue-row .queue-btn {
+    flex: 1;
+    justify-content: center;
+  }
   .queue-btn {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.68rem;
@@ -726,6 +739,7 @@
     .tab-group { max-width:calc(100vw - 140px); }
     .tab { font-size:0.6rem; padding:5px 9px; }
     .queue-group { display:none; }
+    .mobile-queue-row { display:flex; }
 
     .content { padding:0.85rem 1rem 0.5rem; }
     #nudgeBanner { padding:0.85rem 1rem 0; }
@@ -1172,7 +1186,11 @@
   </div>
 </div>
 
-<!-- NUDGE BANNER -->
+<!-- MOBILE QUEUE ROW -->
+<div class="mobile-queue-row">
+  <button class="queue-btn" data-week="need-help" onclick="showQueue('Need Help')">🆘 Need Help <span class="q-badge" id="tabProgNeedHelpMobile"></span></button>
+  <button class="queue-btn" data-week="to-review" onclick="showQueue('To Review')">🔁 To Review <span class="q-badge" id="tabProgToReviewMobile"></span></button>
+</div>
 <div id="nudgeBanner" style="padding:1.5rem 2.5rem 0;">
   <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--w1);border-radius:var(--r);padding:1rem 1.5rem;display:flex;align-items:center;gap:14px;">
     <span style="font-size:1.2rem;opacity:0.7;">👋</span>
@@ -2235,6 +2253,11 @@ function updateQueueCounts() {
   const tr = document.getElementById('tabProgToReview');
   if (nh) nh.textContent = needHelp>0 ? needHelp : '';
   if (tr) tr.textContent = toReview>0 ? toReview : '';
+  // sync mobile badges too
+  const nhm = document.getElementById('tabProgNeedHelpMobile');
+  const trm = document.getElementById('tabProgToReviewMobile');
+  if (nhm) nhm.textContent = needHelp>0 ? needHelp : '';
+  if (trm) trm.textContent = toReview>0 ? toReview : '';
 }
 
 function showWeek(w) {
