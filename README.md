@@ -13,7 +13,7 @@ A single-file learning outcome tracker built with vanilla HTML/CSS/JS. No build 
 
 ## Usage
 Open `index.html` directly in a browser — or visit the live version:
-**[username.github.io/learning-tracker](https://username.github.io/learning-tracker)**
+**[username.github.io/learning-tracker](https://Krishna-Yelnure.github.io/learning-tracker)**
 
 For PWA install (adds to home screen / desktop), open the live link in Chrome or Edge.
 
