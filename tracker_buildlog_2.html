@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Tracker — Build Log</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --border: #d0d4dc;
+    --text: #0d0f14;
+    --text-2: #3d4252;
+    --text-3: #7a8194;
+    --accent: #7c6af5;
+    --green: #12996a;
+    --orange: #d95a08;
+    --blue: #2e8fe0;
+    --red: #dc2626;
+    --r: 10px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+    padding-bottom: 80px;
+  }
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .doc-header {
+    padding: 3rem 3rem 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .doc-eyebrow {
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 0.75rem;
+  }
+  .doc-title {
+    font-family: 'Fraunces', serif;
+    font-size: 2.6rem;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .doc-title em { font-style: italic; color: var(--text-2); }
+  .doc-meta {
+    font-size: 0.65rem;
+    color: var(--text-3);
+    margin-top: 1rem;
+    display: flex;
+    gap: 2rem;
+  }
+  .doc-meta span { color: var(--text-2); }
+
+  /* Rating badge */
+  .rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 16px;
+    margin-top: 1.25rem;
+    font-size: 0.7rem;
+    color: var(--text-2);
+  }
+  .rating-num {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .rating-stars { color: #f59e0b; letter-spacing: 1px; }
+
+  /* Nav */
+  .doc-nav {
+    padding: 1rem 3rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .doc-nav::-webkit-scrollbar { display:none; }
+  .nav-link {
+    font-size: 0.62rem;
+    padding: 6px 14px;
+    color: var(--text-3);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .nav-link:hover { color: var(--text-2); }
+  .nav-link.active { color: var(--text); border-bottom-color: var(--accent); }
+
+  /* Sections */
+  .section {
+    padding: 2.5rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 0.5rem;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Version blocks */
+  .version-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .version-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .version-tag {
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .v-purple { background: #ede9fe; color: #5b21b6; }
+  .v-green  { background: #dcfce7; color: #166534; }
+  .v-blue   { background: #dbeafe; color: #1e40af; }
+  .v-orange { background: #ffedd5; color: #9a3412; }
+  .v-gray   { background: #f1f5f9; color: #475569; }
+  .version-name {
+    font-family: 'Fraunces', serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .version-file {
+    margin-left: auto;
+    font-size: 0.58rem;
+    color: var(--text-3);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+  .version-body {
+    padding: 1rem 1.25rem;
+  }
+  .change-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .change-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .change-list li::before {
+    content: '→';
+    color: var(--text-3);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .change-list li strong { color: var(--text); font-weight: 500; }
+
+  /* Feature table */
+  .feature-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.72rem;
+    margin-bottom: 0.5rem;
+  }
+  .feature-table th {
+    text-align: left;
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .feature-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-2);
+    vertical-align: top;
+  }
+  .feature-table tr:last-child td { border-bottom: none; }
+  .feature-table td:first-child { color: var(--text); font-weight: 500; }
+
+  /* Status pills */
+  .pill {
+    display: inline-block;
+    font-size: 0.55rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .pill-done    { background: #dcfce7; color: #166534; }
+  .pill-next    { background: #dbeafe; color: #1e40af; }
+  .pill-planned { background: #fef9c3; color: #854d0e; }
+  .pill-later   { background: #f1f5f9; color: #475569; }
+  .pill-red     { background: #fee2e2; color: #991b1b; }
+
+  /* Roadmap phases */
+  .phase-block {
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .phase-header {
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .phase-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .phase-title {
+    font-family: 'Fraunces', serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .phase-subtitle { font-size: 0.62rem; color: var(--text-3); margin-left: auto; }
+  .phase-body { padding: 1rem 1.25rem; }
+  .phase-items { display: flex; flex-direction: column; gap: 6px; }
+  .phase-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 0.75rem; color: var(--text-2); line-height: 1.5;
+  }
+  .phase-icon { flex-shrink: 0; font-size: 0.85rem; }
+  .phase-item-text strong { color: var(--text); display: block; font-size: 0.78rem; }
+  .phase-item-text span { font-size: 0.68rem; color: var(--text-3); }
+
+  /* Code block */
+  .code-block {
+    background: #1a1b1e;
+    border-radius: var(--r);
+    padding: 1.1rem 1.25rem;
+    font-size: 0.7rem;
+    color: #e2e8f0;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 0.75rem 0;
+  }
+  .code-block .cm { color: #6b7280; }
+  .code-block .ck { color: #7c6af5; }
+  .code-block .cv { color: #12996a; }
+  .code-block .cs { color: #f59e0b; }
+
+  /* Inline code */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  /* Callout */
+  .callout {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--r);
+    padding: 1rem 1.25rem;
+    font-size: 0.75rem;
+    color: var(--text-2);
+    line-height: 1.65;
+    margin: 1rem 0;
+  }
+  .callout strong { color: var(--text); }
+  .callout.green { border-left-color: var(--green); }
+  .callout.orange { border-left-color: var(--orange); }
+
+  /* Impact table */
+  .impact-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+  .impact-label { font-size: 0.68rem; color: var(--text-2); min-width: 180px; }
+  .impact-bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .impact-bar-fill { height: 100%; border-radius: 4px; }
+  .impact-score { font-size: 0.6rem; color: var(--text-3); min-width: 30px; text-align: right; }
+
+  /* Browser support */
+  .browser-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+  }
+  .browser-row:last-child { border-bottom: none; }
+  .browser-name { min-width: 160px; color: var(--text); font-weight: 500; }
+  .browser-note { color: var(--text-3); font-size: 0.65rem; }
+
+  /* Prompt box */
+  .prompt-box {
+    background: #1a1b1e;
+    border-radius: var(--r);
+    padding: 1.5rem;
+    color: #e2e8f0;
+    font-size: 0.72rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid #374151;
+    background: #111827;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.04em;
+  }
+  .copy-btn:hover { border-color: #6b7280; color: #e2e8f0; }
+  .copy-btn.copied { border-color: #12996a; color: #12996a; background: #052e16; }
+  .prompt-box .ph { color: #7c6af5; font-weight: 500; }
+  .prompt-box .pv { color: #12996a; }
+  .prompt-box .pc { color: #6b7280; }
+
+  /* Footer */
+  .doc-footer {
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.6rem;
+    color: var(--text-3);
+  }
+
+  @media (max-width: 640px) {
+    .section, .doc-header, .doc-footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .doc-nav { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .doc-title { font-size: 1.8rem; }
+    .doc-meta { flex-direction: column; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="doc-eyebrow">Project Build Log &nbsp;·&nbsp; Single HTML App</div>
+    <div class="doc-title">Learning <em>Tracker</em></div>
+    <div style="font-size:0.7rem;color:var(--text-3);margin-top:0.5rem;">track · rate · reflect · complete</div>
+    <div class="doc-meta">
+      <div>Current file &nbsp;<span>math_course_tracker_28.html</span></div>
+      <div>Sessions &nbsp;<span>2</span></div>
+      <div>Versions &nbsp;<span>v21 → v28</span></div>
+      <div>Last updated &nbsp;<span>Session 2</span></div>
+    </div>
+    <div class="rating-badge">
+      <div class="rating-num">9.4</div>
+      <div>
+        <div class="rating-stars">★★★★★</div>
+        <div style="font-size:0.55rem;color:var(--text-3);margin-top:1px;">current rating / 10</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="doc-nav">
+    <a href="#" class="nav-link active" onclick="navScrollTo('what-it-is',this);return false;">What It Is</a>
+    <a href="#" class="nav-link" onclick="navScrollTo('build-history',this);return false;">Session 1</a>
+    <a href="#" class="nav-link" onclick="navScrollTo('build-history-s2',this);return false;">Session 2</a>
+    <a href="#" class="nav-link" onclick="navScrollTo('next-session',this);return false;">Next Session</a>
+    <a href="#" class="nav-link" onclick="navScrollTo('roadmap',this);return false;">Full Roadmap</a>
+    <a href="#" class="nav-link" onclick="navScrollTo('pwa',this);return false;">PWA Notes</a>
+    <a href="#" class="nav-link" onclick="navScrollTo('prompt',this);return false;">Start Prompt</a>
+  </div>
+
+  <!-- What It Is -->
+  <div class="section" id="what-it-is">
+    <div class="section-label">Overview</div>
+    <div class="section-title">What it is</div>
+
+    <div class="callout green">
+      <strong>Single HTML file, zero dependencies, zero backend.</strong> All data stored in localStorage and exportable as JSON. Works offline. Installable as PWA (next session).
+    </div>
+
+    <table class="feature-table" style="margin-top:1.25rem;">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Status</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>4 pre-loaded subjects</td><td><span class="pill pill-done">✓ Done</span></td><td>Mathematics ∑, Computational Thinking ⟨/⟩, Statistics μ, Python 🐍</td></tr>
+        <tr><td>Multi-subject switcher</td><td><span class="pill pill-done">✓ Done</span></td><td>Per-subject colour theming, <code>--accent</code> updates dynamically</td></tr>
+        <tr><td>Collapsible week sections</td><td><span class="pill pill-done">✓ Done</span></td><td>All view + individual week tabs, auto-scroll on tab click</td></tr>
+        <tr><td>Progress rings + bars</td><td><span class="pill pill-done">✓ Done</span></td><td>Per-week rings, overall header % bar</td></tr>
+        <tr><td>4-tab outcome panel</td><td><span class="pill pill-done">✓ Done</span></td><td>Details / Mastery / Recall / Mistakes</td></tr>
+        <tr><td>Mastery stars</td><td><span class="pill pill-done">✓ Done</span></td><td>Exposure → Understanding → Working Knowledge → Proficient → Mastery</td></tr>
+        <tr><td>Practice attempts counter</td><td><span class="pill pill-done">✓ Done</span></td><td>+ Difficulty Score = Attempts × (5 − Stars)</td></tr>
+        <tr><td>Recall tab</td><td><span class="pill pill-done">✓ Done</span></td><td>Free-write memory retrieval textarea, persisted per outcome</td></tr>
+        <tr><td>Mistakes log</td><td><span class="pill pill-done">✓ Done</span></td><td>Numbered entries, delete per entry, badge count on tab</td></tr>
+        <tr><td>Outcome CRUD</td><td><span class="pill pill-done">✓ Done</span></td><td>Edit, delete with state key shifting</td></tr>
+        <tr><td>Week CRUD</td><td><span class="pill pill-done">✓ Done</span></td><td>Add, Edit (title/colour/outcomes), Delete (cleans all state)</td></tr>
+        <tr><td>Edit Week modal</td><td><span class="pill pill-done">✓ Done</span></td><td>Numbered list, drag ⠿ reorder, × per row, colour picker swatches</td></tr>
+        <tr><td>Add Subject modal</td><td><span class="pill pill-done">✓ Done</span></td><td>Includes Quotes field — format: Quote | Author per line</td></tr>
+        <tr><td>Custom quotes per subject</td><td><span class="pill pill-done">✓ Done</span></td><td>Stored on subject object, takes priority over built-in pool</td></tr>
+        <tr><td>Save / Load JSON</td><td><span class="pill pill-done">✓ Done</span></td><td>Full state export/import, works across devices</td></tr>
+        <tr><td>Need Help / To Review queues</td><td><span class="pill pill-done">✓ Done</span></td><td>Tag outcomes, queue panel with confidence re-rating</td></tr>
+        <tr><td>XP system</td><td><span class="pill pill-done">✓ Done</span></td><td>+10 XP per completed outcome, confetti on week complete</td></tr>
+        <tr><td>Mobile responsive</td><td><span class="pill pill-done">✓ Done</span></td><td>Bottom-sheet modals, 2×2 stats, toolbar compresses, queue hidden*</td></tr>
+        <tr><td>Queue on mobile</td><td><span class="pill pill-next">→ Next</span></td><td>Currently hidden on mobile, needs fix</td></tr>
+        <tr><td>⋯ context menu on weeks</td><td><span class="pill pill-done">✓ Done</span></td><td>Always-visible ··· button — Edit / + Add Outcome / 🗑 Delete, smart viewport positioning</td></tr>
+        <tr><td>Inline add outcome</td><td><span class="pill pill-done">✓ Done</span></td><td>Pinned input at bottom of week, Enter to keep adding, Esc to dismiss</td></tr>
+        <tr><td>Colour picker in Add Week</td><td><span class="pill pill-done">✓ Done</span></td><td>8-swatch component, pre-selects next colour in rotation</td></tr>
+        <tr><td>PWA install</td><td><span class="pill pill-done">✓ Done</span></td><td>Inline manifest + SW blob + LT monogram icons + iOS fallback toast</td></tr>
+        <tr><td>Delete week confirm modal</td><td><span class="pill pill-next">→ Next</span></td><td>Replace native confirm() with styled in-app modal</td></tr>
+        <tr><td>Colour picker in Add Subject</td><td><span class="pill pill-next">→ Next</span></td><td>Inconsistent — Edit Week and Add Week both have it, Add Subject doesn't</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Build History -->
+  <div class="section" id="build-history">
+    <div class="section-label">Sessions 1 – 2</div>
+    <div class="section-title">Build history</div>
+
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-gray">v21</span>
+        <span class="version-name">Starting point (attached by user)</span>
+        <span class="version-file">math_course_tracker_21_.html</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li>Pre-built tracker with 4 subjects, week sections, 4-tab panels, CRUD, Save/Load, queue system</li>
+          <li><strong>Known issues:</strong> first load showed math quotes regardless of subject, Edit Week was a wall-of-text textarea, mobile untested, no colour editing, no week delete</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-purple">v22</span>
+        <span class="version-name">Mobile + Edit Week + Quotes + Bug fixes</span>
+        <span class="version-file">math_course_tracker_22.html</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li><strong>Edit Week modal rebuilt</strong> — textarea replaced with scrollable numbered list, inline edit per row, drag ⠿⠿ to reorder, × to delete, + Add outcome button</li>
+          <li><strong>Mobile layout overhaul</strong> — bottom-sheet modals, 2×2 stats grid, compressed toolbar, tighter padding throughout, 420px breakpoint added</li>
+          <li><strong>Quotes for new subjects</strong> — Add Subject modal now has a Quotes field (format: Quote | Author per line), stored on subject object, takes priority over built-in pool</li>
+          <li><strong>Fixed <code>--green</code> and <code>--accent</code></strong> CSS variables undefined (caused broken bar colours and panel tab indicators)</li>
+          <li><strong><code>--accent</code> updates dynamically</strong> when switching subjects — panel tab indicators now match current subject colour</li>
+          <li><strong>First-load quote bug fixed</strong> — <code>getQuotesForSubject()</code> now checks <code>sub.quotes</code> first before built-in pool</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-blue">v23</span>
+        <span class="version-name">Week tab auto-scroll (attempt 1)</span>
+        <span class="version-file">math_course_tracker_23.html</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li><strong>Auto-scroll on week tab click</strong> — clicking Wk 1, Wk 2 etc now scrolls page to that week, landing just below sticky toolbar</li>
+          <li>Used <code>getBoundingClientRect()</code> — <strong>bug:</strong> position is relative to current viewport so scroll was wrong when already scrolled down</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-green">v24</span>
+        <span class="version-name">Auto-scroll fix + mobile CSS properly applied</span>
+        <span class="version-file">math_course_tracker_24.html</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li><strong>Auto-scroll fixed</strong> — switched from <code>getBoundingClientRect()</code> to <code>offsetTop</code> (absolute page position), scroll now correct regardless of current scroll position</li>
+          <li><strong>Mobile CSS properly merged</strong> — v22 mobile improvements were missing from v23, now fully applied in v24</li>
+          <li>Mobile preview mockup built (3 phone screens: main view, mastery tab, add subject modal)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-orange">v25</span>
+        <span class="version-name">Full Week CRUD — colour picker + delete</span>
+        <span class="version-file">math_course_tracker_25.html</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li><strong>Colour picker in Edit Week modal</strong> — 8 swatches from WEEK_COLORS palette, selected colour highlighted with ring, updates week header/pip/bar/ring on save</li>
+          <li><strong>Delete Week — two entry points:</strong> 🗑 button inside Edit Week modal header, AND trash icon on week header (visible on hover)</li>
+          <li><strong>Delete Week cleans all state</strong> — removes all <code>w{N}_i{N}</code> state keys for deleted week, redirects to All view if currently on deleted week</li>
+          <li><strong>Confirmation dialog</strong> shows week name + exact outcome count: <em>"Delete 'Polynomials'? This will permanently remove 26 outcomes..."</em></li>
+          <li><strong>Added <code>ew-row</code> CSS</strong> — edit week list row styles (was missing from v24, caused broken Edit Week UI)</li>
+          <li><strong>Added <code>.color-swatch</code> CSS</strong> — hover scale, selected ring border</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Session 2 -->
+  <div class="section" id="build-history-s2">
+    <div class="section-label">Session 2</div>
+    <div class="section-title">Build history — session 2</div>
+
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-purple">v26</span>
+        <span class="version-name">⋯ Context menu + Inline Add Outcome</span>
+        <span class="version-file">math_course_tracker_26.html</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li><strong>⋯ context menu on week headers</strong> — permanent <code>···</code> button replaces hidden hover-only edit/delete icons; always visible, mobile-friendly; dropdown has ✏️ Edit Week, + Add Outcome, 🗑 Delete Week with danger styling</li>
+          <li><strong>Smart menu positioning</strong> — calculates viewport bounds and flips upward if near bottom of screen; closes on any outside click via capture listener</li>
+          <li><strong>Inline Add Outcome</strong> — triggered from ⋯ menu; pinned input row at bottom of each week's item list; auto-expands week if collapsed; <kbd>Enter</kbd> adds and stays focused for rapid entry; <kbd>Esc</kbd> dismisses</li>
+          <li><strong>Works on empty weeks too</strong> — replaces old "no outcomes yet" placeholder with inline add; new hint text updated to reference ⋯ menu</li>
+          <li><strong><code>buildItemInnerHTML()</code> extracted</strong> — shared helper used by both the full <code>buildUI()</code> rebuild and the inline-add partial refresh, keeping both paths in sync</li>
+          <li><strong>Header click guard updated</strong> — was checking <code>.crud-btn</code>, now checks <code>.week-ctx-btn</code> to prevent toggle on menu button click</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-green">v27</span>
+        <span class="version-name">Colour picker in Add Week modal</span>
+        <span class="version-file">math_course_tracker_27.html</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li><strong>8-swatch colour picker added to Add Week modal</strong> — same component as Edit Week; uses shared <code>.color-swatch</code> CSS with hover scale and selected ring</li>
+          <li><strong>Smart pre-selection</strong> — on modal open, calculates next week number and pre-selects <code>WEEK_COLORS[(newNum-1) % 8]</code> so you almost never need to change it</li>
+          <li><strong><code>_addWeekColor</code> state variable</strong> — tracks selection independently; reset to <code>null</code> on modal close; <code>submitNewWeek()</code> uses it with fallback to auto-rotation</li>
+          <li><strong>Consistent UX</strong> — Add Week, Edit Week, and Add Subject modal (via colour rotation) now all handle week colour the same way</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-blue">v28</span>
+        <span class="version-name">PWA — manifest, service worker, install button, LT icons</span>
+        <span class="version-file">math_course_tracker_28.html</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li><strong>LT monogram icons</strong> — generated as inline SVG at runtime (32px favicon, 192px and 512px app icons); dark background with serif lettermark; set as <code>favicon</code>, <code>apple-touch-icon</code>, and manifest icons via data URIs — no external files</li>
+          <li><strong>Web App Manifest</strong> — built as JSON and injected as <code>data:application/manifest+json</code> link; covers name, short_name, display: standalone, theme/background colours, orientation, both icon sizes</li>
+          <li><strong>Service Worker via Blob URL</strong> — SW code built as string array, converted to Blob URL and registered; cache-first strategy caches app shell on install, falls back gracefully on <code>file://</code></li>
+          <li><strong>Install button in bottom bar</strong> — appears only when relevant; Chrome/Android: shows on <code>beforeinstallprompt</code>, triggers native prompt; iOS Safari: always shown (no install event), shows "Tap Share → Add to Home Screen" toast; hides on <code>appinstalled</code></li>
+          <li><strong>Entire PWA init wrapped in try/catch</strong> — PWA failure is completely silent; app remains fully functional if any PWA API is blocked (sandboxes, file://, etc.)</li>
+          <li><strong>Bug fix: rogue <code>-e</code> in script</strong> — <code>echo -e</code> wrote literal <code>-e</code> token into the JS block causing <code>ReferenceError: e is not defined</code> on every page load; removed</li>
+          <li><strong>Replaced deprecated <code>unescape()</code></strong> — base64 encoding now uses <code>encodeURIComponent</code> + regex byte-walk, works in all strict sandboxes</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Next Session -->
+  <div class="section" id="next-session">
+    <div class="section-label">Planned</div>
+    <div class="section-title">Next session — 3 quick wins + 1 fix</div>
+
+    <div class="callout">
+      <strong>Attach:</strong> <code>math_course_tracker_28.html</code> — always the source of truth. All items below are independent; build in any order.
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:1.25rem;">
+
+      <div class="phase-block">
+        <div class="phase-header" style="background:#fdf2f8;border-bottom-color:#fce7f3;">
+          <div class="phase-num" style="background:#fce7f3;color:#9d174d;">1</div>
+          <div class="phase-title">Queue panel on mobile</div>
+          <span class="pill pill-next" style="margin-left:auto;">Priority fix</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-items">
+            <div class="phase-item">
+              <span class="phase-icon">→</span>
+              <div class="phase-item-text">
+                <strong>Need Help + To Review buttons currently hidden on mobile</strong>
+                <span>Move to a second toolbar row, or integrate into bottom bar. Queue is a core workflow — tagging on mobile but not being able to review breaks the loop.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" style="background:#fff7ed;border-bottom-color:#ffedd5;">
+          <div class="phase-num" style="background:#ffedd5;color:#9a3412;">2</div>
+          <div class="phase-title">Delete week — styled confirm modal</div>
+          <span class="pill pill-next" style="margin-left:auto;">Polish</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-items">
+            <div class="phase-item">
+              <span class="phase-icon">→</span>
+              <div class="phase-item-text">
+                <strong>Replace native <code>confirm()</code> with an in-app modal</strong>
+                <span>Everything else uses polished modals — the native browser dialog is the one jarring moment. Show week name + outcome count in a styled danger confirmation card.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" style="background:#eff6ff;border-bottom-color:#dbeafe;">
+          <div class="phase-num" style="background:#dbeafe;color:#1e40af;">3</div>
+          <div class="phase-title">Colour picker in Add Subject modal</div>
+          <span class="pill pill-next" style="margin-left:auto;">Consistency</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-items">
+            <div class="phase-item">
+              <span class="phase-icon">→</span>
+              <div class="phase-item-text">
+                <strong>Add Week and Edit Week both have the 8-swatch picker — Add Subject doesn't</strong>
+                <span>One-liner port of the same component. Pre-select next colour in WEEK_COLORS rotation based on number of existing subjects.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" style="background:#faf5ff;border-bottom-color:#ede9fe;">
+          <div class="phase-num" style="background:#ede9fe;color:#5b21b6;">4</div>
+          <div class="phase-title">Phase A — Habit layer</div>
+          <span class="pill pill-planned" style="margin-left:auto;">When ready</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-items">
+            <div class="phase-item">
+              <span class="phase-icon">🔥</span>
+              <div class="phase-item-text">
+                <strong>Streak counter</strong>
+                <span>Daily study streak stored in localStorage. Resets at midnight if no outcomes completed that day.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">⏳</span>
+              <div class="phase-item-text">
+                <strong>Exam countdown per subject</strong>
+                <span>Set an exam date per subject. Shows days remaining in the header. Urgency nudge.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">🍅</span>
+              <div class="phase-item-text">
+                <strong>Pomodoro floating widget</strong>
+                <span>25/5 timer, draggable, persists across week navigation.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Full Roadmap -->
+  <div class="section" id="roadmap">
+    <div class="section-label">Brainstorm</div>
+    <div class="section-title">Full feature roadmap</div>
+
+    <div class="callout orange">
+      <strong>Design principle:</strong> Every feature must pass — <em>"Does this make a student open the app more often and study more effectively?"</em> Features that create dashboards to admire instead of tools to use get cut.
+    </div>
+
+    <div style="margin-top:1.5rem;display:flex;flex-direction:column;gap:8px;">
+
+      <div class="phase-block">
+        <div class="phase-header">
+          <div class="phase-num" style="background:#dcfce7;color:#166534;">A</div>
+          <div class="phase-title">Habit Layer — <em style="font-family:Fraunces,serif;font-weight:300;">make students come back daily</em></div>
+          <div class="phase-subtitle">Estimated rating after: 9.5</div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-items">
+            <div class="phase-item">
+              <span class="phase-icon">🔥</span>
+              <div class="phase-item-text">
+                <strong>Daily Streak Counter</strong>
+                <span>Consecutive days with any interaction. Visible in header. Pomodoro session counts toward streak. Low effort, high habit impact.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">⏳</span>
+              <div class="phase-item-text">
+                <strong>Exam Date + Countdown per Subject</strong>
+                <span>Set exam date → header shows "Maths exam in 14 days — 68% complete". Urgency score: outcomes/day needed. Turns red when urgent.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">🍅</span>
+              <div class="phase-item-text">
+                <strong>Pomodoro Timer — floating bottom-right widget</strong>
+                <span>25 min study / 5 min break. Auto-links to current subject + week. Session stored: {subject, week, duration, outcomes_completed, timestamp}. After 4 sessions → 15 min long break. Unlocks study hours stats for free.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header">
+          <div class="phase-num" style="background:#dbeafe;color:#1e40af;">B</div>
+          <div class="phase-title">Intelligence Layer — <em style="font-family:Fraunces,serif;font-weight:300;">tell students what to do next</em></div>
+          <div class="phase-subtitle">Estimated rating after: 9.7</div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-items">
+            <div class="phase-item">
+              <span class="phase-icon">🔁</span>
+              <div class="phase-item-text">
+                <strong>Spaced Repetition Scheduler</strong>
+                <span>Highest learning science impact. Rating → auto-schedule review: 1★=1day, 3★=3days, 5★=14days. "Due Today" queue at top. Re-rating updates next review date.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">📈</span>
+              <div class="phase-item-text">
+                <strong>Confidence Trend Sparklines</strong>
+                <span>Each re-rating stored (not overwritten). Small sparkline per outcome: ★☆☆→★★☆→★★★. Week-level average confidence over time. Progress made visible.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">📋</span>
+              <div class="phase-item-text">
+                <strong>Weekly Review (auto-generated)</strong>
+                <span>Sunday modal: outcomes completed, reviews missed, hardest outcomes this week, next week focus. One-click tag hard outcomes. Not manual — auto-generated from existing data.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header">
+          <div class="phase-num" style="background:#ede9fe;color:#5b21b6;">C</div>
+          <div class="phase-title">Power Layer — <em style="font-family:Fraunces,serif;font-weight:300;">genuinely unforgettable</em></div>
+          <div class="phase-subtitle">Estimated rating after: 9.9</div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-items">
+            <div class="phase-item">
+              <span class="phase-icon">🤖</span>
+              <div class="phase-item-text">
+                <strong>AI Recall Checker (Claude API in Recall tab)</strong>
+                <span>After free-write recall, click "Check my recall" → Claude compares to outcome text and gives gentle feedback. No grade — just "Good, you missed: edge case when n=0". Unique differentiator. No other study tracker has this.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">📊</span>
+              <div class="phase-item-text">
+                <strong>Study Analytics Dashboard</strong>
+                <span>Total hours, sessions per subject, confidence trends, outcomes/hour, best study times. Built from Pomodoro + spaced repetition data already being collected.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header">
+          <div class="phase-num" style="background:#f1f5f9;color:#475569;">D</div>
+          <div class="phase-title">Cut / Deprioritised</div>
+          <div class="phase-subtitle">Fails the design principle test</div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-items">
+            <div class="phase-item">
+              <span class="phase-icon">❌</span>
+              <div class="phase-item-text">
+                <strong>Outcome Dependencies / Linking</strong>
+                <span>Too complex, adds friction. Students don't need a graph — they need to study.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">❌</span>
+              <div class="phase-item-text">
+                <strong>Share Card / Wrapped export</strong>
+                <span>Nice but doesn't drive learning behaviour.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">❌</span>
+              <div class="phase-item-text">
+                <strong>Pomodoro "Can't close tab" warning</strong>
+                <span>Annoying. Kills goodwill. Students minimise other apps themselves.</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <span class="phase-icon">❌</span>
+              <div class="phase-item-text">
+                <strong>Focus rating prompt after Pomodoro session</strong>
+                <span>Friction. Students will skip it. Not worth the data.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:1.5rem;">
+      <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);margin-bottom:1rem;">Impact vs effort ranking</div>
+      <div class="impact-row"><div class="impact-label">🔁 Spaced Repetition</div><div class="impact-bar-track"><div class="impact-bar-fill" style="width:100%;background:var(--accent);"></div></div><div class="impact-score">5/5 🔴</div></div>
+      <div class="impact-row"><div class="impact-label">🤖 AI Recall Check</div><div class="impact-bar-track"><div class="impact-bar-fill" style="width:100%;background:var(--accent);"></div></div><div class="impact-score">5/5 🟡</div></div>
+      <div class="impact-row"><div class="impact-label">🔥 Daily Streak</div><div class="impact-bar-track"><div class="impact-bar-fill" style="width:80%;background:var(--green);"></div></div><div class="impact-score">4/5 🟢</div></div>
+      <div class="impact-row"><div class="impact-label">⏳ Exam Countdown</div><div class="impact-bar-track"><div class="impact-bar-fill" style="width:80%;background:var(--green);"></div></div><div class="impact-score">4/5 🟢</div></div>
+      <div class="impact-row"><div class="impact-label">🍅 Pomodoro Timer</div><div class="impact-bar-track"><div class="impact-bar-fill" style="width:80%;background:var(--green);"></div></div><div class="impact-score">4/5 🟢</div></div>
+      <div class="impact-row"><div class="impact-label">📈 Confidence Trends</div><div class="impact-bar-track"><div class="impact-bar-fill" style="width:80%;background:var(--blue);"></div></div><div class="impact-score">4/5 🟡</div></div>
+      <div class="impact-row"><div class="impact-label">📋 Weekly Review</div><div class="impact-bar-track"><div class="impact-bar-fill" style="width:80%;background:var(--blue);"></div></div><div class="impact-score">4/5 🟡</div></div>
+      <div class="impact-row"><div class="impact-label">📊 Analytics Dashboard</div><div class="impact-bar-track"><div class="impact-bar-fill" style="width:60%;background:var(--orange);"></div></div><div class="impact-score">3/5 🔵</div></div>
+      <div style="font-size:0.55rem;color:var(--text-3);margin-top:8px;">🟢 Quick win (low effort) &nbsp; 🟡 Medium effort &nbsp; 🔴 High effort &nbsp; 🔵 Later</div>
+    </div>
+  </div>
+
+  <!-- PWA Notes -->
+  <div class="section" id="pwa">
+    <div class="section-label">Technical</div>
+    <div class="section-title">PWA browser support</div>
+
+    <div class="callout">
+      <strong>Ulaa is Chromium-based</strong> — full PWA support, works exactly like Chrome. No special handling needed.
+    </div>
+
+    <div style="margin-top:1.25rem;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;">
+      <div class="browser-row" style="padding:8px 16px;background:var(--bg);border-bottom:1px solid var(--border);">
+        <div style="font-size:0.55rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);min-width:160px;">Browser</div>
+        <div style="font-size:0.55rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);">Support</div>
+        <div style="font-size:0.55rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);margin-left:auto;">Notes</div>
+      </div>
+      <div style="padding:0 16px;">
+        <div class="browser-row"><div class="browser-name">✅ Ulaa</div><span class="pill pill-done">Full</span><div class="browser-note" style="margin-left:auto;">Chromium-based, identical to Chrome</div></div>
+        <div class="browser-row"><div class="browser-name">✅ Chrome</div><span class="pill pill-done">Full</span><div class="browser-note" style="margin-left:auto;">Install icon in URL bar, standalone window</div></div>
+        <div class="browser-row"><div class="browser-name">✅ Edge</div><span class="pill pill-done">Full</span><div class="browser-note" style="margin-left:auto;">Taskbar icon, standalone window</div></div>
+        <div class="browser-row"><div class="browser-name">✅ Brave</div><span class="pill pill-done">Full</span><div class="browser-note" style="margin-left:auto;">Chromium-based</div></div>
+        <div class="browser-row"><div class="browser-name">✅ Samsung Internet</div><span class="pill pill-done">Full</span><div class="browser-note" style="margin-left:auto;">Android</div></div>
+        <div class="browser-row"><div class="browser-name">✅ Safari iOS 16.4+</div><span class="pill pill-planned">Partial</span><div class="browser-note" style="margin-left:auto;">Add to Home Screen, needs Apple meta tags</div></div>
+        <div class="browser-row"><div class="browser-name">⚠️ Safari macOS</div><span class="pill pill-planned">Manual</span><div class="browser-note" style="margin-left:auto;">No install prompt, manual dock bookmark only</div></div>
+        <div class="browser-row"><div class="browser-name">❌ Firefox</div><span class="pill pill-red">None</span><div class="browser-note" style="margin-left:auto;">No PWA support — unavoidable, just runs as normal tab</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem;font-size:0.7rem;color:var(--text-2);">
+      <strong>Important:</strong> PWA requires <strong>HTTPS or localhost</strong> — cannot install from <code>file://</code>. Host via <code>npx serve .</code>, GitHub Pages, or Netlify Drop.
+    </div>
+  </div>
+
+  <!-- Start Prompt -->
+  <div class="section" id="prompt">
+    <div class="section-label">New Chat</div>
+    <div class="section-title">Copy-paste start prompt</div>
+
+    <div class="callout">
+      <strong>How to use:</strong> Copy the text below, paste into a new Claude chat, then attach <code>math_course_tracker_28.html</code> as a file. Replace the last line with what you want built.
+    </div>
+
+    <div class="prompt-box" style="margin-top:1.25rem;" id="promptBox">
+      <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6z"/><path d="M2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2z"/></svg>
+        Copy
+      </button>
+<span class="ph">**Context:**</span> We've been building a multi-subject learning outcome tracker — a single HTML file.
+<span class="ph">**Current version:**</span> `math_course_tracker_28.html` <span class="pc">*(always attach the file — it's the source of truth)*</span>
+
+<span class="ph">**What it is:**</span>
+- 4 pre-loaded subjects: Mathematics (∑), Computational Thinking (⟨/⟩), Statistics (μ), Python (🐍)
+- Multi-subject switcher, per-subject colour theming, `--accent` + `--green` CSS vars in `:root`
+- Collapsible week sections, All view with progress rings + bars, auto-scroll on week tab click
+- Each outcome: 4-tab panel (Details / Mastery / Recall / Mistakes)
+- Mastery: Exposure→Mastery stars, attempts counter, Difficulty Score = attempts × (5−stars)
+- Edit Week modal: inline numbered list, drag ⠿ reorder, × per row, colour picker swatches
+- Add Week modal: same 8-swatch colour picker, pre-selects next colour in rotation
+- Add Subject modal: Quotes field (Quote | Author per line), stored on subject, priority over built-in pool
+- Save/Load JSON, subject-specific quote rotation
+- Week CRUD: add, edit title/colour/outcomes, delete (cleans all state)
+- ⋯ context menu on week headers (always visible): ✏ Edit / + Add Outcome / 🗑 Delete
+- Inline Add Outcome: pinned input at bottom of week list, Enter adds + stays focused, Esc dismisses
+- `buildItemInnerHTML()` shared helper used by full rebuild and inline-add partial refresh
+- PWA: inline manifest (data URI), SW via Blob URL, LT monogram icons, Install button in bottom bar
+- PWA install button: Chrome/Android shows on beforeinstallprompt; iOS always shows with toast fallback
+- Queue panel (Need Help / To Review) hidden on mobile — needs fix next session
+- <span class="pv">Current rating: 9.4/10</span>
+
+<span class="ph">**Next session build list (in order):**</span>
+1. Queue panel mobile fix — restore Need Help / To Review on mobile (second toolbar row or bottom bar)
+2. Delete week confirm modal — replace native confirm() with styled in-app danger modal
+3. Colour picker in Add Subject modal — same 8-swatch component, pre-selects by subject count
+4. Phase A (Habit): 🔥 Streak counter, ⏳ Exam countdown per subject, 🍅 Pomodoro floating widget
+
+<span class="ph">**After next session (brainstormed, not yet started):**</span>
+- Phase B (Intelligence): 🔁 Spaced repetition scheduler, 📈 Confidence sparklines, 📋 Auto weekly review
+- Phase C (Power): 🤖 AI recall checker (Claude API in Recall tab), 📊 Study analytics
+
+<span class="ph">**Instruction:**</span> [describe what you want to build or fix]</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <div>Learning Tracker Build Log &nbsp;·&nbsp; Session 2</div>
+    <div>v21 → v28 &nbsp;·&nbsp; Rating 9.4/10</div>
+  </div>
+
+</div>
+<script>
+function navScrollTo(id, el) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  const nav = document.querySelector('.doc-nav');
+  const navBottom = nav ? nav.offsetTop + nav.offsetHeight : 0;
+  const targetTop = target.offsetTop;
+  window.scrollTo({ top: targetTop - navBottom - 8, behavior: 'smooth' });
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function copyPrompt() {
+  const box = document.getElementById('promptBox');
+  const btn = document.getElementById('copyBtn');
+  const clone = box.cloneNode(true);
+  clone.querySelector('.copy-btn').remove();
+  const text = clone.innerText || clone.textContent;
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg> Copied!`;
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6z"/><path d="M2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2z"/></svg> Copy`;
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>

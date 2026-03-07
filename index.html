@@ -1,0 +1,3146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d0f14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LT">
+<meta name="description" content="Track, rate, reflect and complete your learning outcomes.">
+<title>Learning Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" id="appleTouchIcon">
+<link rel="icon" type="image/svg+xml" id="faviconSvg">
+<link rel="manifest" id="pwaManifest">
+<style>
+
+
+  :root {
+    --bg:        #f5f6f8;
+    --surface:   #ffffff;
+    --border:    #d0d4dc;
+    --border-hi: #9ea5b8;
+    --text:      #0d0f14;
+    --text-2:    #3d4252;
+    --text-3:    #7a8194;
+    --w1: #6c57f0;
+    --w2: #12996a;
+    --w3: #d95a08;
+    --w4: #2e8fe0;
+    --red: #dc2626;
+    --r:  10px;
+    --rlg: 14px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { font-size:15px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .everything { position:relative; z-index:1; padding-bottom:76px; }
+  .page-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 2.5rem 2.5rem 1.75rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .eyebrow {
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: 0.5rem;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  h1 em { font-style: italic; color: var(--text-2); }
+  .header-sub { font-size: 0.68rem; color: var(--text-3); margin-top: 0.5rem; letter-spacing: 0.06em; }
+
+  .header-right { display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0; }
+  .overall-pct {
+    font-family: 'Fraunces', serif;
+    font-size: 3rem;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: -0.04em;
+  }
+  .overall-pct sup { font-size: 1rem; color: var(--text-3); vertical-align: super; margin-left: 2px; font-weight:300; }
+  .hprog-track { width: 180px; height: 2px; background: var(--border); border-radius: 2px; overflow:hidden; }
+  .hprog-fill { height:100%; background: var(--text); border-radius:2px; transition: width 0.5s cubic-bezier(0.16,1,0.3,1); }
+
+  /* ── QUOTE ── */
+  .quote-bar {
+    padding: 1.1rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+  }
+  .quote-mark { font-family: "Fraunces", serif; font-size: 2.2rem; color: var(--w1); line-height: 1; flex-shrink:0; margin-top:-4px; opacity:0.6; }
+  .quote-text {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--text-2);
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+  .quote-text cite { font-style:normal; font-size:0.7rem; color:var(--text-3); display:block; margin-top:4px; font-family:"JetBrains Mono",monospace; letter-spacing:0.04em; }
+
+  /* ── RINGS ── */
+  .rings-row {
+    padding: 1.5rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: var(--surface);
+  }
+  .rings-row::-webkit-scrollbar { display:none; }
+
+  .ring-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: var(--r);
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    background: transparent;
+  }
+  .ring-card:hover { background: var(--bg); border-color: var(--border); }
+  .ring-card.active { background: var(--bg); border-color: var(--border-hi); box-shadow: 0 0 0 3px rgba(108,87,240,0.08); }
+  .ring-card.active .ring-pct { color: var(--w1); }
+  .ring-svg { transform: rotate(-90deg); flex-shrink:0; }
+  .ring-track { fill:none; stroke: var(--border); stroke-width:3; }
+  .ring-fill { fill:none; stroke-width:3; stroke-linecap:round; transition: stroke-dashoffset 0.9s cubic-bezier(0.16,1,0.3,1); }
+  .ring-info {}
+  .ring-wk { font-size:0.58rem; text-transform:uppercase; letter-spacing:0.14em; color:var(--text-3); margin-bottom:2px; }
+  .ring-pct { font-family:'Fraunces',serif; font-size:1.25rem; font-weight:300; color:var(--text); line-height:1; }
+  .ring-cnt { font-size:0.58rem; color:var(--text-3); margin-top:2px; }
+
+  /* ── STATS ── */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .stat-cell {
+    padding: 1.5rem 2.25rem;
+    border-right: 1px solid var(--border);
+  }
+  .stat-cell:last-child { border-right:none; }
+  .stat-lbl { font-size:0.6rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-3); margin-bottom:8px; font-weight:500; }
+  .stat-num { font-family:'Fraunces',serif; font-size:2.2rem; font-weight:300; color:var(--text); line-height:1; letter-spacing:-0.02em; }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    padding: 0.75rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 1px 0 var(--border);
+  }
+  .toolbar::-webkit-scrollbar { display:none; }
+
+  /* search */
+  .search-box { position:relative; flex-shrink:0; }
+  .search-box svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-3); pointer-events:none; }
+  .search-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    padding: 6px 12px 6px 30px;
+    outline: none;
+    width: 190px;
+    transition: border-color 0.2s, width 0.25s, box-shadow 0.2s;
+    height: 32px;
+  }
+  .search-input:focus { border-color: var(--border-hi); width: 230px; box-shadow: 0 0 0 3px rgba(108,87,240,0.08); }
+  .search-input::placeholder { color: var(--text-3); }
+
+  /* tab pill group */
+  .tab-group {
+    display: flex;
+    gap: 2px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 3px;
+    height: 32px;
+    align-items: center;
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: calc(100vw - 520px);
+  }
+  .tab-group::-webkit-scrollbar { display:none; }
+
+  .tab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 6px 16px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: var(--text-3);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .tab:hover { color: var(--text-2); background: rgba(255,255,255,0.7); }
+  .tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.1), 0 0 0 1px var(--border); }
+  .tab .mini-prog { font-size:0.58rem; color:var(--text-3); }
+  .tab.active .mini-prog { color:var(--text-2); font-weight:500; }
+
+  /* queue buttons */
+  .queue-group { display:flex; gap:6px; flex-shrink:0; margin-left:auto; }
+  .queue-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 5px 13px;
+    border-radius: var(--r);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-2);
+    white-space: nowrap;
+    flex-shrink: 0;
+    height: 32px;
+  }
+  .queue-btn:hover { border-color: var(--border-hi); color: var(--text); }
+  .queue-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .queue-btn .q-badge {
+    background: var(--bg);
+    color: var(--text-2);
+    font-size: 0.58rem;
+    padding: 1px 6px;
+    border-radius: 20px;
+    min-width: 18px;
+    text-align: center;
+    font-weight: 500;
+  }
+  .queue-btn.active .q-badge { background: rgba(255,255,255,0.18); color: var(--bg); }
+
+  /* ── DOWNLOAD BANNER ── */
+  .download-banner {
+    margin: 1.5rem 0 0;
+    padding: 0 2.5rem;
+    display: none;
+  }
+  .download-inner {
+    background: var(--text);
+    border-radius: var(--rlg);
+    padding: 1.25rem 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .dl-left { display:flex; align-items:center; gap:1rem; }
+  .dl-trophy { font-size:1.4rem; }
+  .dl-title { font-family:'Fraunces',serif; font-size:1.1rem; font-weight:300; color:var(--bg); }
+  .dl-sub { font-size:0.68rem; color:rgba(242,243,245,0.5); margin-top:2px; }
+  .dl-btn {
+    font-family:'JetBrains Mono',monospace; font-size:0.7rem;
+    background: var(--bg); color: var(--text); border:none;
+    border-radius: var(--r); padding: 8px 18px; cursor:pointer;
+    transition: opacity 0.15s; white-space:nowrap; letter-spacing:0.02em;
+  }
+  .dl-btn:hover { opacity:0.85; }
+
+  /* ── CONTENT ── */
+  .content { padding:2rem 2.5rem 1rem; }
+
+  /* ── WEEK SECTION ── */
+  .week-section { display:none; margin-bottom:2rem; }
+  .week-section.visible { display:block; }
+  .week-section { --wc: var(--border); }
+
+  .week-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.875rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--r) var(--r) 0 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    background: var(--surface);
+    border-top: 3px solid var(--wc, var(--border));
+    margin-bottom: 0;
+    border-radius: var(--r) var(--r) 0 0;
+  }
+  .week-pip { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .week-title { font-family:'Fraunces',serif; font-size:1.05rem; font-weight:400; color:var(--text); letter-spacing:-0.01em; }
+  .week-meta { margin-left:auto; font-size:0.6rem; color:var(--text-3); background:var(--bg); border:1px solid var(--border); padding:2px 8px; border-radius:20px; }
+  .week-meta span { color:var(--text-2); font-weight:500; }
+
+  /* ── ITEM ── */
+  .item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    margin-bottom: 4px;
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    position: relative;
+  }
+  .week-items { border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--r) var(--r); overflow: hidden; }
+  .week-items[style*="display: none"] + .week-header,
+  .week-header.collapsed { border-radius: var(--r) !important; border-bottom: 1px solid var(--border) !important; }
+  .week-items .item { border-radius: 0; border-left: none; border-right: none; margin-bottom: 0; border-bottom: 1px solid var(--border); }
+  .week-items .item:last-child { border-bottom: none; }
+  .item:hover { border-color: var(--border-hi); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .item.completed { background: #f5f6f8; border-color: var(--border); }
+  .item.completed .item-text { opacity:0.32; text-decoration:line-through; text-decoration-color: var(--border-hi); }
+
+  .item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+  }
+
+  /* CHECKBOX */
+  .cb {
+    width:17px; height:17px; border-radius:4px;
+    border: 1.5px solid var(--border-hi);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; transition:all 0.15s; cursor:pointer;
+  }
+  .cb:hover { border-color: var(--text-2); }
+  .cb.checked { border-color:transparent; }
+  .cb.checked.w1 { background: var(--w1); }
+  .cb.checked.w2 { background: var(--w2); }
+  .cb.checked.w3 { background: var(--w3); }
+  .cb.checked.w4 { background: var(--w4); }
+  .cb svg { opacity:0; transform:scale(0.3); transition:all 0.15s; }
+  .cb.checked svg { opacity:1; transform:scale(1); }
+
+  .item-num { font-size:0.58rem; color:var(--text-3); flex-shrink:0; min-width:22px; letter-spacing:0.04em; }
+  .item-text { flex:1; font-size:0.8rem; line-height:1.65; color:var(--text); transition:opacity 0.2s; letter-spacing:-0.01em; }
+
+  /* CRUD */
+  .crud-btn {
+    width:23px; height:23px; border-radius:5px;
+    border:1px solid transparent; background:transparent;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all 0.12s; flex-shrink:0; opacity:0; pointer-events:none; color:var(--text-3);
+  }
+  .item:hover .crud-btn { opacity:1; pointer-events:all; }
+  .crud-btn.edit:hover { background:#f0f1f5; border-color:var(--border); color:var(--text); }
+  .crud-btn.del:hover { background:#fff1f1; border-color:#fecaca; color:var(--red); }
+
+  /* ── WEEK CONTEXT MENU BUTTON ── */
+  .week-ctx-btn {
+    width: 26px; height: 26px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--text-3); font-size: 1rem; font-weight: 700;
+    transition: all 0.12s; flex-shrink: 0; letter-spacing: -1px;
+    line-height: 1; padding-bottom: 2px;
+  }
+  .week-ctx-btn:hover { background: var(--bg); border-color: var(--border-hi); color: var(--text); }
+
+  /* ── CONTEXT MENU DROPDOWN ── */
+  .ctx-menu {
+    position: fixed;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+    z-index: 500;
+    min-width: 160px;
+    overflow: hidden;
+    animation: ctxIn 0.1s ease;
+  }
+  @keyframes ctxIn {
+    from { opacity:0; transform:translateY(-4px) scale(0.97); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+  }
+  .ctx-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: background 0.1s;
+    border: none; background: none; width: 100%; text-align: left;
+    letter-spacing: 0.01em;
+  }
+  .ctx-item:hover { background: var(--bg); color: var(--text); }
+  .ctx-item.danger:hover { background: #fff1f1; color: var(--red); }
+  .ctx-item .ctx-icon { font-size: 0.82rem; flex-shrink:0; opacity: 0.8; }
+  .ctx-divider { height: 1px; background: var(--border); margin: 2px 0; }
+
+  /* ── INLINE ADD OUTCOME ── */
+  .inline-add-row {
+    display: flex; align-items: center; gap: 0;
+    padding: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    animation: panelIn 0.12s ease;
+  }
+  .inline-add-input {
+    flex: 1;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 11px 14px 11px 16px;
+    line-height: 1.5;
+  }
+  .inline-add-input::placeholder { color: var(--text-3); }
+  .inline-add-hint {
+    font-size: 0.58rem;
+    color: var(--text-3);
+    padding: 0 12px 0 0;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .inline-add-hint kbd {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 4px;
+    color: var(--text-2);
+  }
+
+  .expand-btn {
+    width:23px; height:23px; border-radius:5px;
+    border:1px solid var(--border); background:transparent;
+    color:var(--text-3); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.15s; flex-shrink:0;
+  }
+  .expand-btn:hover { background:#f0f1f5; color:var(--text); border-color:var(--border-hi); }
+  .expand-btn.open { transform:rotate(180deg); }
+
+  /* PANEL */
+  .item-panel {
+    display:none; border-top:1px solid var(--border);
+    padding: 1rem 1.25rem 1.25rem;
+    background: var(--bg);
+    flex-direction:column; gap:1rem;
+    animation: panelIn 0.15s ease;
+  }
+  .item-panel.open { display:flex; }
+  @keyframes panelIn {
+    from { opacity:0; transform:translateY(-3px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  .panel-label { font-size:0.58rem; text-transform:uppercase; letter-spacing:0.14em; color:var(--text-2); margin-bottom:6px; font-weight:500; }
+
+  .stars { display:flex; gap:4px; }
+  .star { font-size:1rem; cursor:pointer; transition:transform 0.1s; filter:grayscale(1) opacity(0.18); user-select:none; }
+  .star.lit { filter:grayscale(0) opacity(1); }
+  .star:hover { transform:scale(1.2); }
+  .conf-feedback { font-size:0.68rem; color:var(--text-2); margin-top:4px; display:block; }
+
+  .tags-wrap { display:flex; gap:5px; flex-wrap:wrap; }
+  .tag {
+    font-size:0.62rem; padding:3px 10px; border-radius:20px;
+    border:1px solid var(--border); cursor:pointer;
+    transition:all 0.12s; color:var(--text-2); background:transparent; user-select:none;
+  }
+  .tag:hover { border-color:var(--border-hi); color:var(--text); }
+  .tag.active { color:#fff; border-color:transparent; }
+  .tag.active.t-easy { background:#18a96e; }
+  .tag.active.t-medium { background:#d97706; }
+  .tag.active.t-hard { background:var(--red); }
+  .tag.active.t-todo { background:var(--w4); }
+  .tag.active.t-review { background:var(--w1); }
+
+  textarea.note {
+    width:100%; background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--r); color:var(--text);
+    font-family:'JetBrains Mono',monospace; font-size:0.72rem;
+    padding:9px 11px; resize:vertical; min-height:66px;
+    transition:border-color 0.15s; outline:none; line-height:1.6;
+  }
+  textarea.note:focus { border-color:var(--border-hi); }
+  textarea.note::placeholder { color:var(--text-3); }
+
+  /* ── QUEUE PANEL ── */
+  .queue-header-bar {
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:6px; padding-bottom:0.75rem; border-bottom:1px solid var(--border);
+  }
+  .queue-title { font-family:'Fraunces',serif; font-size:1rem; font-weight:300; color:var(--text); }
+  .queue-desc { font-size:0.68rem; color:var(--text-3); margin-bottom:1.5rem; line-height:1.55; }
+  .queue-item {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--r); padding:14px 16px; margin-bottom:4px;
+    transition:border-color 0.15s, box-shadow 0.15s;
+  }
+  .queue-item:hover { border-color:var(--border-hi); box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+  .untag-btn {
+    font-family:'JetBrains Mono',monospace; font-size:0.62rem;
+    background:transparent; border:1px solid var(--border); color:var(--text-3);
+    border-radius:6px; padding:3px 10px; cursor:pointer; white-space:nowrap;
+    flex-shrink:0; transition:all 0.15s;
+  }
+  .untag-btn:hover { border-color:var(--border-hi); color:var(--text); }
+
+  /* ── BOTTOM BAR ── */
+  .bottom-bar {
+    position:fixed; bottom:0;
+    /* align exactly with page-wrap */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1100px;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    z-index: 100;
+    box-shadow: 0 -1px 0 var(--border);
+  }
+  .bottom-bar-inner {
+    padding: 10px 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bottom-left { display:flex; gap:6px; align-items:center; }
+  .bottom-center { flex:1; max-width:320px; margin:0 auto; text-align:center; }
+  .bprog-label { font-size:0.58rem; color:var(--text-3); margin-bottom:4px; letter-spacing:0.06em; }
+  .bprog-label strong { color:var(--text); }
+  .bprog-track { height:2px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .bprog-fill { height:100%; background:var(--text); border-radius:2px; transition:width 0.5s ease; }
+  .bottom-right { display:flex; justify-content:flex-end; align-items:center; }
+
+  .bar-btn {
+    font-family:'JetBrains Mono',monospace; font-size:0.64rem;
+    padding:5px 12px; border-radius:var(--r);
+    border:1px solid var(--border); background:transparent;
+    color:var(--text-3); cursor:pointer; transition:all 0.15s; letter-spacing:0.02em;
+  }
+  .bar-btn:hover { border-color:var(--border-hi); color:var(--text); }
+  .bar-btn.save:hover { border-color:#18a96e; color:#18a96e; }
+  .bar-btn.load:hover { border-color:var(--w1); color:var(--w1); }
+
+  .add-week-btn {
+    font-family:'JetBrains Mono',monospace; font-size:0.68rem;
+    padding:6px 18px; border-radius:var(--r);
+    border:1px solid var(--text); background:var(--text);
+    color:var(--bg); cursor:pointer; transition:opacity 0.15s; letter-spacing:0.03em;
+    font-weight:500;
+  }
+  .add-week-btn:hover { opacity:0.8; }
+
+  /* ── PWA INSTALL BUTTON ── */
+  .pwa-install-btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.64rem;
+    padding: 5px 12px; border-radius: var(--r);
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-3); cursor: pointer; transition: all 0.15s;
+    display: none; align-items: center; gap: 6px;
+    letter-spacing: 0.02em; white-space: nowrap;
+  }
+  .pwa-install-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .pwa-install-btn.visible { display: flex; }
+
+  /* ── PWA INSTALL TOAST ── */
+  .pwa-toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: var(--bg);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    padding: 10px 18px; border-radius: var(--r);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    z-index: 9999; white-space: nowrap;
+    animation: toastIn 0.25s ease, toastOut 0.3s ease 2.7s forwards;
+    pointer-events: none;
+  }
+  @keyframes toastIn  { from { opacity:0; transform:translateX(-50%) translateY(8px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+  @keyframes toastOut { from { opacity:1; } to { opacity:0; } }
+
+  /* ── MODALS ── */
+  .modal-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(17,19,24,0.45); z-index:200;
+    align-items:center; justify-content:center;
+    backdrop-filter:blur(4px);
+  }
+  .modal-box {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--rlg); padding:2rem;
+    width:min(500px,92vw); max-height:85vh; overflow-y:auto;
+    position:relative;
+    box-shadow:0 24px 64px rgba(0,0,0,0.1),0 4px 16px rgba(0,0,0,0.05);
+  }
+  .modal-close {
+    position:absolute; top:14px; right:14px;
+    background:var(--bg); border:1px solid var(--border); color:var(--text-2);
+    width:27px; height:27px; border-radius:7px; cursor:pointer; font-size:12px;
+    display:flex; align-items:center; justify-content:center; transition:all 0.15s;
+  }
+  .modal-close:hover { border-color:var(--border-hi); color:var(--text); }
+  .modal-title { font-family:'Fraunces',serif; font-size:1.15rem; font-weight:300; margin-bottom:0.3rem; color:var(--text); }
+  .modal-sub { font-size:0.68rem; color:var(--text-3); margin-bottom:1.5rem; line-height:1.6; }
+  .modal-label { font-size:0.58rem; text-transform:uppercase; letter-spacing:0.14em; color:var(--text-3); display:block; margin-bottom:6px; }
+  .modal-input, .modal-textarea {
+    width:100%; background:var(--bg); border:1px solid var(--border);
+    border-radius:var(--r); color:var(--text);
+    font-family:'JetBrains Mono',monospace; font-size:0.75rem;
+    padding:9px 11px; outline:none; box-sizing:border-box;
+    transition:border-color 0.15s; margin-bottom:1rem;
+  }
+  .modal-input:focus, .modal-textarea:focus { border-color:var(--border-hi); }
+  .modal-textarea { min-height:150px; resize:vertical; line-height:1.6; }
+  .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:0.25rem; }
+  .btn-cancel {
+    font-family:'JetBrains Mono',monospace; font-size:0.7rem;
+    background:transparent; border:1px solid var(--border); color:var(--text-2);
+    border-radius:var(--r); padding:7px 16px; cursor:pointer; transition:all 0.15s;
+  }
+  .btn-cancel:hover { border-color:var(--border-hi); color:var(--text); }
+  .btn-primary {
+    font-family:'JetBrains Mono',monospace; font-size:0.7rem;
+    background:var(--text); color:var(--bg); border:none;
+    border-radius:var(--r); padding:7px 18px; cursor:pointer; transition:opacity 0.15s;
+  }
+  .btn-primary:hover { opacity:0.82; }
+  .btn-primary.blue { background:var(--w1); }
+
+  /* ── XP POP ── */
+  .xp-pop {
+    position:fixed; font-family:'JetBrains Mono',monospace; font-size:0.7rem;
+    color:var(--text); background:var(--surface); border:1px solid var(--border);
+    padding:3px 10px; border-radius:20px; pointer-events:none; z-index:9999;
+    box-shadow:0 2px 8px rgba(0,0,0,0.07);
+    animation: xpFly 0.9s ease forwards;
+  }
+  @keyframes xpFly {
+    0% { opacity:1; transform:translateY(0); }
+    100% { opacity:0; transform:translateY(-36px); }
+  }
+
+  /* ── CONFETTI ── */
+  .confetti-container { position:fixed; inset:0; pointer-events:none; z-index:9998; overflow:hidden; }
+  .confetti-piece {
+    position:absolute; width:5px; height:5px;
+    animation:confettiFall 1.8s ease forwards; border-radius:1px; opacity:0.6;
+  }
+  @keyframes confettiFall {
+    0% { transform:translateY(-20px) rotate(0deg); opacity:0.6; }
+    100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width:768px) {
+    header { flex-direction:column; align-items:flex-start; padding:1.1rem 1rem 1rem; gap:0.6rem; }
+    .header-right { flex-direction:row; align-items:center; gap:14px; }
+    .hprog-track { width:100px; }
+    .overall-pct { font-size:2.2rem; }
+
+    .subject-bar-inner { padding:0 1rem; }
+    .subject-tab { padding:0.65rem 0.9rem; font-size:0.62rem; }
+
+    .quote-bar { padding:0.85rem 1rem; gap:10px; }
+    .quote-text { font-size:0.82rem; }
+    .quote-mark { font-size:1.6rem; }
+
+    .rings-row { padding:0.85rem 1rem; gap:3px; }
+    .ring-card { padding:7px 9px; gap:7px; }
+    .ring-svg { width:38px; height:38px; }
+    .ring-pct { font-size:1rem; }
+    .ring-wk, .ring-cnt { font-size:0.52rem; }
+
+    .stats-strip { grid-template-columns:repeat(2,1fr); }
+    .stat-cell { padding:0.85rem 1rem; }
+    .stat-cell:nth-child(2) { border-right:none; }
+    .stat-cell:nth-child(3) { border-right:1px solid var(--border); }
+    .stat-num { font-size:1.7rem; }
+    .stat-lbl { font-size:0.55rem; }
+
+    .toolbar { padding:0.55rem 1rem; gap:5px; }
+    .search-input { width:120px; font-size:0.65rem; height:30px; }
+    .search-input:focus { width:150px; }
+    .tab-group { max-width:calc(100vw - 140px); }
+    .tab { font-size:0.6rem; padding:5px 9px; }
+    .queue-group { display:none; }
+
+    .content { padding:0.85rem 1rem 0.5rem; }
+    #nudgeBanner { padding:0.85rem 1rem 0; }
+    .download-banner { padding:0.85rem 1rem 0; }
+
+    .week-header { padding:0.6rem 0.75rem; }
+    .week-title { font-size:0.82rem; }
+    .week-pct-bar { width:48px !important; }
+    .week-meta { font-size:0.55rem; }
+
+    .item-header { padding:9px 11px; gap:6px; }
+    .item-text { font-size:0.74rem; }
+    .item-panel { padding:0.8rem 0.9rem 0.9rem; }
+    .item-panel-tabs { margin:-0.8rem -0.9rem 0.8rem; padding:0 0.9rem; }
+    .panel-tab-btn { font-size:0.55rem; padding:6px 9px; }
+    .mastery-stars .mstar { font-size:1.05rem; }
+
+    .bottom-bar { padding:8px 1rem; }
+    .bottom-center { display:none; }
+    .bar-btn { font-size:0.6rem; padding:5px 9px; }
+    .add-week-btn { font-size:0.6rem; padding:5px 9px; }
+
+    .modal-overlay { align-items:flex-end; }
+    .modal-box {
+      max-width:100%;
+      width:100%;
+      border-radius:var(--rlg) var(--rlg) 0 0;
+      padding:1.25rem 1.1rem 1.5rem;
+      max-height:88vh;
+      overflow-y:auto;
+    }
+  }
+
+  @media (max-width:420px) {
+    h1 { font-size:1.55rem; }
+    .ring-card { padding:6px 7px; }
+    .rings-row { gap:2px; }
+    .tab { font-size:0.57rem; padding:4px 7px; }
+    .search-input { width:100px; }
+    .search-input:focus { width:130px; }
+  }
+
+
+
+  /* ── SUBJECT SWITCHER ── */
+  .subject-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .subject-bar::-webkit-scrollbar { display:none; }
+  .subject-bar-inner {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 2.5rem;
+  }
+  .subject-tab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.85rem 1.25rem;
+    border: none;
+    background: none;
+    color: var(--text-3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+  .subject-tab:hover { color: var(--text-2); }
+  .subject-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+  .subject-tab-add {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.85rem 1rem;
+    border: none;
+    background: none;
+    color: var(--accent);
+    cursor: pointer;
+    transition: opacity 0.15s;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+  .subject-tab-add:hover { opacity: 0.7; }
+
+  /* ── MASTERY PANEL ── */
+  .item-panel-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    margin: -1rem -1.25rem 1rem;
+    padding: 0 1.25rem;
+    background: var(--bg);
+  }
+  .panel-tab-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    padding: 7px 14px;
+    border: none;
+    background: none;
+    color: var(--text-3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.12s;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .panel-tab-btn:hover { color: var(--text-2); }
+  .panel-tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+  .panel-section { display: none; flex-direction: column; gap: 0.85rem; }
+  .panel-section.active { display: flex; }
+
+  /* mastery stars in panel */
+  .mastery-stars { display: flex; gap: 2px; }
+  .mastery-stars .mstar {
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #d1d5db;
+    transition: transform 0.1s, color 0.1s;
+    padding: 2px 3px;
+  }
+  .mastery-stars .mstar:hover { transform: scale(1.2); }
+  .mastery-stars .mstar.lit { color: #f59e0b; }
+  .mastery-label-row {
+    font-size: 0.68rem;
+    color: var(--text-2);
+    min-height: 1.2em;
+  }
+  .mastery-label-row .level { font-weight: 500; color: var(--text); }
+
+  /* attempts */
+  .attempts-row { display: flex; align-items: center; gap: 10px; }
+  .attempt-count-big {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    min-width: 2rem;
+    text-align: center;
+  }
+  .attempt-inc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 5px 14px;
+    border-radius: var(--r);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .attempt-inc:hover { border-color: var(--accent); color: var(--accent); }
+  .diff-score-bar {
+    margin-top: 6px;
+  }
+  .diff-score-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.58rem;
+    color: var(--text-3);
+    margin-bottom: 3px;
+  }
+  .diff-score-bar-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .diff-score-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--green);
+    transition: width 0.4s ease, background 0.3s;
+  }
+
+  /* recall */
+  .recall-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .recall-prompt-bar {
+    padding: 7px 12px;
+    font-size: 0.65rem;
+    color: var(--text-2);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .recall-prompt-bar strong { color: var(--text); }
+  .recall-textarea {
+    width: 100%;
+    min-height: 70px;
+    padding: 10px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text);
+    background: var(--surface);
+    border: none;
+    outline: none;
+    resize: vertical;
+    line-height: 1.6;
+  }
+  .recall-textarea::placeholder { color: var(--text-3); }
+
+  /* mistake log */
+  .mistake-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+  .mistake-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 2px solid #dc2626;
+    border-radius: var(--r);
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    color: var(--text-2);
+    line-height: 1.5;
+    animation: panelIn 0.15s ease;
+  }
+  .mistake-entry .me-num { font-size: 0.55rem; color: var(--text-3); flex-shrink:0; padding-top:2px; }
+  .mistake-entry .me-text { flex: 1; }
+  .mistake-entry .me-del {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-3); font-size: 0.8rem; padding: 0 2px; flex-shrink:0;
+    transition: color 0.12s;
+  }
+  .mistake-entry .me-del:hover { color: #dc2626; }
+  .mistake-add-row { display: flex; gap: 5px; }
+  .mistake-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .mistake-input:focus { border-color: var(--border-hi); }
+  .mistake-input::placeholder { color: var(--text-3); }
+  .mistake-log-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    padding: 6px 12px;
+    border-radius: var(--r);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .mistake-log-btn:hover { border-color: #dc2626; color: #dc2626; }
+
+  /* diff indicator on item */
+  .item-diff-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: none;
+  }
+
+  /* week colour picker swatches */
+  .color-swatch {
+    width: 22px; height: 22px; border-radius: 50%;
+    cursor: pointer; border: 2px solid transparent;
+    transition: transform 0.12s, border-color 0.12s;
+    flex-shrink: 0;
+  }
+  .color-swatch:hover { transform: scale(1.18); }
+  .color-swatch.selected { border-color: var(--text); transform: scale(1.18); }
+
+  /* edit week outcome list rows */
+  .ew-row {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 8px; border-bottom: 1px solid var(--border);
+    background: var(--surface); transition: background 0.1s;
+  }
+  .ew-row:last-child { border-bottom: none; }
+  .ew-row:hover { background: #f8f9fb; }
+  .ew-row.drag-over { border-top: 2px solid var(--accent); background: #f0eeff; }
+  .ew-drag { color:var(--text-3); cursor:grab; font-size:0.85rem; flex-shrink:0; padding:2px; user-select:none; letter-spacing:-2px; }
+  .ew-drag:active { cursor:grabbing; }
+  .ew-num { font-size:0.55rem; color:var(--text-3); flex-shrink:0; min-width:20px; text-align:right; letter-spacing:0.03em; }
+  .ew-input {
+    flex:1; font-family:'JetBrains Mono',monospace; font-size:0.72rem;
+    color:var(--text); background:transparent; border:none; outline:none;
+    padding:3px 4px; border-radius:4px; line-height:1.5; transition:background 0.12s;
+  }
+  .ew-input:focus { background:var(--bg); outline:1px solid var(--border-hi); }
+  .ew-del {
+    background:none; border:none; cursor:pointer; color:var(--text-3);
+    font-size:0.85rem; padding:2px 4px; border-radius:4px; flex-shrink:0;
+    transition:color 0.12s, background 0.12s;
+  }
+  .ew-del:hover { color:var(--red); background:#fff1f1; }
+
+  /* subject modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 1.75rem 2rem;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  }
+  .modal-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.01em;
+  }
+  .modal-field { margin-bottom: 0.9rem; }
+  .modal-field label {
+    display: block;
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .modal-field input, .modal-field textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .modal-field input:focus, .modal-field textarea:focus { border-color: var(--border-hi); }
+  .modal-field textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
+  .modal-field .field-hint {
+    font-size: 0.6rem;
+    color: var(--text-3);
+    margin-top: 4px;
+  }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+  .modal-cancel {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 7px 16px;
+    border-radius: var(--r);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .modal-cancel:hover { border-color: var(--border-hi); }
+  .modal-submit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 7px 20px;
+    border-radius: var(--r);
+    border: none;
+    background: var(--text);
+    color: var(--bg);
+    cursor: pointer;
+    transition: opacity 0.15s;
+    font-weight: 500;
+  }
+  .modal-submit:hover { opacity: 0.8; }
+
+</style>
+</head>
+<body>
+<div class="everything"><div class="page-wrap"><div id="accentBar" style="height:3px;background:#7c6af5;"></div>
+<div class="subject-bar"><div class="subject-bar-inner" id="subjectBar"></div></div>
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="eyebrow">Learning Tracker &nbsp;/&nbsp; <span id="eyebrowSubject">Mathematics</span></div>
+    <h1 id="headerTitle">Math <em>Mastery</em></h1>
+    <div class="header-sub">track &middot; rate &middot; reflect &middot; complete</div>
+  </div>
+  <div class="header-right">
+    <div class="overall-pct" id="overallPct">0<sup>%</sup></div>
+    <div class="hprog-track"><div class="hprog-fill" id="overallBar" style="width:0%"></div></div>
+  </div>
+</header>
+
+<!-- QUOTE -->
+<div class="quote-bar">
+  <div class="quote-mark">&ldquo;</div>
+  <div class="quote-text" id="quoteText">
+    Mathematics is not about numbers, equations, or algorithms: it is about understanding.
+    <cite>&mdash; William Paul Thurston</cite>
+  </div>
+</div>
+
+<!-- RINGS -->
+<div class="rings-row" id="ringArea">
+
+</div>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-cell"><div class="stat-lbl">Total Outcomes</div><div class="stat-num" id="statTotal">0</div></div>
+  <div class="stat-cell"><div class="stat-lbl">Completed</div><div class="stat-num" id="statDone">0</div></div>
+  <div class="stat-cell"><div class="stat-lbl">XP Earned</div><div class="stat-num" id="statXP">0</div></div>
+  <div class="stat-cell"><div class="stat-lbl">Avg Confidence</div><div class="stat-num" id="statConf">—</div></div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="search-box">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+    <input type="text" class="search-input" placeholder="Search outcomes..." id="searchInput" oninput="filterItems()">
+  </div>
+  <div class="tab-group" id="tabGroup">
+    
+  </div>
+  <div class="queue-group">
+    <button class="queue-btn" data-week="need-help" onclick="showQueue('Need Help')">🆘 Need Help <span class="q-badge" id="tabProgNeedHelp"></span></button>
+    <button class="queue-btn" data-week="to-review" onclick="showQueue('To Review')">🔁 To Review <span class="q-badge" id="tabProgToReview"></span></button>
+  </div>
+</div>
+
+<!-- NUDGE BANNER -->
+<div id="nudgeBanner" style="padding:1.5rem 2.5rem 0;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--w1);border-radius:var(--r);padding:1rem 1.5rem;display:flex;align-items:center;gap:14px;">
+    <span style="font-size:1.2rem;opacity:0.7;">👋</span>
+    <div>
+      <div style="font-family:Fraunces,serif;font-size:0.95rem;font-weight:400;color:var(--text);margin-bottom:2px;">Start with Week 1 — check off your first outcome.</div>
+      <div style="font-size:0.68rem;color:var(--text-3);line-height:1.5;">Tap any checkbox to mark it complete. Open the panel below each item to rate your confidence, add tags and notes.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DOWNLOAD BANNER -->
+<div class="download-banner" id="downloadBanner">
+  <div class="download-inner">
+    <div class="dl-left">
+      <span class="dl-trophy">🏆</span>
+      <div><div class="dl-title">Course Complete</div><div class="dl-sub">Download your full progress report</div></div>
+    </div>
+    <button class="dl-btn" onclick="downloadReport()">Download Report</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="mainContent"></div>
+<div class="content" id="queuePanel" style="display:none;"></div>
+
+</div><!-- MODALS -->
+<!-- ADD WEEK -->
+<div class="modal-overlay" id="addWeekModal">
+  <div class="modal-box">
+    <div class="modal-title">Add a Week</div>
+    <div class="modal-field">
+      <label>Week Title</label>
+      <input type="text" id="newWeekLabel" placeholder="e.g. Coordinate Geometry">
+    </div>
+    <div class="modal-field">
+      <label>Week Colour</label>
+      <div id="addWeekColorPicker" style="display:flex;gap:7px;flex-wrap:wrap;margin-top:2px;"></div>
+    </div>
+    <div class="modal-field">
+      <label>Learning Outcomes</label>
+      <textarea id="newWeekOutcomes" placeholder="One outcome per line...&#10;Define a function&#10;Identify domain and range&#10;..."></textarea>
+      <div class="field-hint">Each line becomes one learning outcome. You can add more later.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeAddWeekModal()">Cancel</button>
+      <button class="modal-submit" onclick="submitNewWeek()">Add Week</button>
+    </div>
+  </div>
+</div>
+<!-- EDIT WEEK -->
+<div class="modal-overlay" id="editWeekModal">
+  <div class="modal-box" style="max-width:560px;max-height:90vh;display:flex;flex-direction:column;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;">
+      <div class="modal-title" style="margin-bottom:0;">Edit Week</div>
+      <button onclick="deleteWeek()" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;padding:5px 12px;border-radius:var(--r);border:1px solid #fecaca;background:#fff1f1;color:var(--red);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fff1f1'">🗑 Delete Week</button>
+    </div>
+    <input type="hidden" id="editWeekNum">
+    <div class="modal-field" style="flex-shrink:0;">
+      <label>Week Title</label>
+      <input type="text" id="editWeekLabel" placeholder="Week title">
+    </div>
+    <div class="modal-field" style="flex-shrink:0;">
+      <label>Week Colour</label>
+      <div id="editWeekColorPicker" style="display:flex;gap:7px;flex-wrap:wrap;margin-top:2px;"></div>
+    </div>
+    <div class="modal-field" style="flex:1;min-height:0;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+        <label style="margin-bottom:0;">Learning Outcomes <span id="editWeekCount" style="color:var(--text-3);font-weight:400;"></span></label>
+        <button onclick="addEditWeekRow()" style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text-2);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-hi)'" onmouseout="this.style.borderColor='var(--border)'">+ Add outcome</button>
+      </div>
+      <div id="editWeekOutcomesList" style="flex:1;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);min-height:180px;max-height:40vh;"></div>
+      <div class="field-hint" style="margin-top:5px;">Click any outcome to edit inline. Drag ⠿ to reorder. Click × to delete.</div>
+    </div>
+    <div class="modal-actions" style="flex-shrink:0;">
+      <button class="modal-cancel" onclick="closeEditWeekModal()">Cancel</button>
+      <button class="modal-submit" onclick="submitEditWeek()">Save Changes</button>
+    </div>
+  </div>
+</div>
+<!-- ADD SUBJECT -->
+<div class="modal-overlay" id="subjectModal">
+  <div class="modal-box">
+    <div class="modal-title">New Subject</div>
+    <div class="modal-field">
+      <label>Subject Name</label>
+      <input type="text" id="newSubjectName" placeholder="e.g. Physics, History, Chemistry">
+    </div>
+    <div class="modal-field">
+      <label>Symbol / Emoji (optional)</label>
+      <input type="text" id="newSubjectEmoji" placeholder="e.g. ⚛ or φ or just leave blank" style="max-width:260px;">
+    </div>
+    <div class="modal-field">
+      <label>Week 1 Outcomes (optional)</label>
+      <textarea id="newSubjectOutcomes" placeholder="One outcome per line...&#10;You can also add weeks later."></textarea>
+      <div class="field-hint">Paste your learning outcomes, one per line. You can edit them anytime.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeSubjectModal()">Cancel</button>
+      <button class="modal-submit" onclick="submitNewSubject()">Create Subject</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFETTI -->
+<div class="confetti-container" id="confetti"></div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <div class="bottom-bar-inner">
+    <div class="bottom-left">
+      <button class="bar-btn" onclick="saveProgress()">&#8595; Save</button>
+      <button class="bar-btn" onclick="document.getElementById('loadFile').click()">&#8593; Load</button>
+      <input type="file" id="loadFile" accept=".json" style="display:none" onchange="loadProgress(event)">
+      <button class="pwa-install-btn" id="pwaInstallBtn" onclick="pwaInstall()">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Install App
+      </button>
+    </div>
+    <div class="bottom-center">
+      <div class="bprog-label">Progress &mdash; <strong id="progLabel">0%</strong></div>
+      <div class="bprog-track"><div class="bprog-fill" id="bottomFill" style="width:0%"></div></div>
+    </div>
+    <div class="bottom-right">
+      <button class="add-week-btn" id="bottomRight" onclick="handleBottomRight()">+ Add Week</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- EDIT ITEM MODAL -->
+<div class="modal-overlay" id="editItemModal">
+  <div class="modal-box">
+    <div class="modal-title">Edit Outcome</div>
+    <input type="hidden" id="editItemWeek">
+    <input type="hidden" id="editItemIdx">
+    <div class="modal-field">
+      <label>Learning Outcome</label>
+      <textarea id="editItemText" style="min-height:80px;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeEditItem()">Cancel</button>
+      <button class="modal-submit" onclick="submitEditItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── MULTI-SUBJECT DATA STORE ──
+// subjects = { id: { name, color, emoji, weeks: [{num, label, color, items:[]}] } }
+let SUBJECTS = {};
+let currentSubjectId = null;
+
+const WEEK_COLORS = ['#7c6af5','#18a96e','#d95a08','#2e8fe0','#e879a0','#fbbf24','#2dd4bf','#a78bfa'];
+
+const QUOTES = {
+  default: [
+    { q: "The secret of getting ahead is getting started.", a: "Mark Twain" },
+    { q: "Learning never exhausts the mind.", a: "Leonardo da Vinci" },
+    { q: "An investment in knowledge pays the best interest.", a: "Benjamin Franklin" },
+    { q: "The more that you read, the more things you will know.", a: "Dr. Seuss" },
+    { q: "Education is not the filling of a pail, but the lighting of a fire.", a: "W.B. Yeats" },
+  ],
+  mathematics: [
+    { q: "Mathematics is not about numbers, equations, or algorithms: it is about understanding.", a: "William Paul Thurston" },
+    { q: "Pure mathematics is, in its way, the poetry of logical ideas.", a: "Albert Einstein" },
+    { q: "The only way to learn mathematics is to do mathematics.", a: "Paul Halmos" },
+    { q: "In mathematics the art of proposing a question must be held of higher value than solving it.", a: "Georg Cantor" },
+    { q: "Mathematics is the language in which God has written the universe.", a: "Galileo Galilei" },
+    { q: "Without mathematics, there is nothing you can do.", a: "Shakuntala Devi" },
+  ],
+  'computational thinking': [
+    { q: "Everyone should learn how to program a computer, because it teaches you how to think.", a: "Steve Jobs" },
+    { q: "The computer was born to solve problems that did not exist before.", a: "Bill Gates" },
+    { q: "Computational thinking is a fundamental skill for everyone, not just computer scientists.", a: "Jeannette Wing" },
+    { q: "The art of programming is the art of organising complexity.", a: "Edsger Dijkstra" },
+    { q: "First, solve the problem. Then, write the code.", a: "John Johnson" },
+    { q: "Simplicity is the soul of efficiency.", a: "Austin Freeman" },
+  ],
+  statistics: [
+    { q: "Statistics is the grammar of science.", a: "Karl Pearson" },
+    { q: "Without data, you are just another person with an opinion.", a: "W. Edwards Deming" },
+    { q: "It is easy to lie with statistics, but it is easier to lie without them.", a: "Frederick Mosteller" },
+    { q: "The best thing about being a statistician is that you get to play in everyone's backyard.", a: "John Tukey" },
+    { q: "Torture the data, and it will confess to anything.", a: "Ronald Coase" },
+    { q: "In God we trust; all others must bring data.", a: "W. Edwards Deming" },
+  ],
+  python: [
+    { q: "Code is like humour. When you have to explain it, it is bad.", a: "Cory House" },
+    { q: "The best way to get a project done faster is to start sooner.", a: "Jim Highsmith" },
+    { q: "Python is an experiment in how much freedom programmers need.", a: "Guido van Rossum" },
+    { q: "Readability counts. Simple is better than complex.", a: "The Zen of Python" },
+    { q: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", a: "Martin Fowler" },
+    { q: "The function of good software is to make the complex appear to be simple.", a: "Grady Booch" },
+  ],
+  physics: [
+    { q: "Physics is the most fundamental and all-inclusive of the sciences.", a: "Richard Feynman" },
+    { q: "The most incomprehensible thing about the universe is that it is comprehensible.", a: "Albert Einstein" },
+    { q: "If you thought that science was certain — well, that is just an error on your part.", a: "Richard Feynman" },
+    { q: "Not only is the universe stranger than we think, it is stranger than we can think.", a: "Werner Heisenberg" },
+    { q: "Physics is imagination in a straight jacket.", a: "John Moffat" },
+  ],
+  chemistry: [
+    { q: "Chemistry is the study of matter, but I prefer to see it as the study of change.", a: "Walter White" },
+    { q: "The nitrogen in our DNA, the calcium in our teeth, are made in the interiors of collapsing stars.", a: "Carl Sagan" },
+    { q: "In chemistry, you do not find love. You find reactions.", a: "Anonymous" },
+    { q: "The most important thing in science is not so much to obtain new facts as to discover new ways of thinking about them.", a: "William Bragg" },
+  ],
+  biology: [
+    { q: "Nothing in biology makes sense except in the light of evolution.", a: "Theodosius Dobzhansky" },
+    { q: "The secret of life is not in the molecules, but in the logic of their interactions.", a: "Carl Woese" },
+    { q: "Life is the art of drawing sufficient conclusions from insufficient premises.", a: "Samuel Butler" },
+    { q: "Biology is the study of complicated things that give the appearance of having been designed for a purpose.", a: "Richard Dawkins" },
+  ],
+  history: [
+    { q: "Those who cannot remember the past are condemned to repeat it.", a: "George Santayana" },
+    { q: "History is the version of past events that people have decided to agree upon.", a: "Napoleon Bonaparte" },
+    { q: "The more you know about the past, the better prepared you are for the future.", a: "Theodore Roosevelt" },
+    { q: "History is not a burden on the memory but an illumination of the soul.", a: "Lord Acton" },
+  ],
+};
+
+function getQuotesForSubject() {
+  const sub = getCurrentSubject();
+  if (!sub) return QUOTES.default;
+  const name = sub.name.toLowerCase().trim();
+  // exact match first
+  if (QUOTES[name]) return QUOTES[name];
+  // partial match
+  for (const key of Object.keys(QUOTES)) {
+    if (key !== 'default' && (name.includes(key) || key.includes(name.split(' ')[0]))) {
+      return QUOTES[key];
+    }
+  }
+  return QUOTES.default;
+}
+const MASTERY_LABELS = ['','Exposure','Understanding','Working Knowledge','Proficient','Mastery'];
+const MASTERY_DESC   = ['tap a star to rate','seen the concept','understand the definition','can solve standard problems','can apply in unfamiliar problems','can explain or teach this'];
+
+// ── STATE ──
+// state[subjectId][key] = { done, conf, note, tag, attempts, mistakes[], recall }
+let allState = {};
+
+function getSubjectState() {
+  if (!allState[currentSubjectId]) allState[currentSubjectId] = {};
+  return allState[currentSubjectId];
+}
+function getItemKey(w, i) { return `w${w}_i${i}`; }
+function getItemState(w, i) {
+  const st = getSubjectState();
+  const k = getItemKey(w, i);
+  if (!st[k]) st[k] = { done:false, conf:0, note:'', tag:'', attempts:0, mistakes:[], recall:'' };
+  // migrate old entries
+  if (!st[k].mistakes) st[k].mistakes = [];
+  if (!st[k].attempts) st[k].attempts = 0;
+  if (!st[k].recall) st[k].recall = '';
+  return st[k];
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('tracker_v3_state', JSON.stringify(allState));
+    localStorage.setItem('tracker_v3_subjects', JSON.stringify(SUBJECTS));
+    localStorage.setItem('tracker_v3_current', currentSubjectId);
+  } catch(e) {}
+}
+function loadState() {
+  try {
+    const st = localStorage.getItem('tracker_v3_state');
+    if (st) allState = JSON.parse(st);
+    const subs = localStorage.getItem('tracker_v3_subjects');
+    if (subs) SUBJECTS = JSON.parse(subs);
+    const cur = localStorage.getItem('tracker_v3_current');
+    if (cur && SUBJECTS[cur]) currentSubjectId = cur;
+  } catch(e) {}
+}
+
+// ── DEFAULT MATH SUBJECT ──
+function initDefaultSubjects() {
+  if (Object.keys(SUBJECTS).length > 0) return;
+  const now = Date.now();
+  const mathId = 'math_' + now;
+  const ctId   = 'ct_'   + (now+1);
+  const statId = 'stat_' + (now+2);
+  const pyId   = 'py_'   + (now+3);
+
+  SUBJECTS[mathId] = {
+    name: 'Mathematics', emoji: '∑', color: '#7c6af5',
+    weeks: [
+      { num:1, label:'Numbers, Sets & Functions', color:'#7c6af5', items:[
+        "Identify and list natural numbers and integers.",
+        "Distinguish between notations like ℕ, ℤ.",
+        "Understand multiplication and division in terms of addition and subtraction.",
+        "Identify quotient, remainder, and mod (modulus).",
+        "Find factors and prime factorize natural numbers.",
+        "Define rational numbers.",
+        "Define irrational numbers.",
+        "Perform operations with rational and irrational numbers.",
+        "Understand and apply the concept of absolute value.",
+        "Represent numbers on the number line.",
+        "Understand interval notation for subsets of real numbers.",
+        "Define and identify sets: empty set, universal set, subsets.",
+        "Perform set operations: union, intersection, difference, complement.",
+        "Use Venn diagrams to represent set relationships.",
+        "Apply the inclusion-exclusion principle.",
+        "Define and interpret Cartesian products.",
+        "Understand the concept of a relation between sets.",
+        "Define a function and distinguish it from a general relation.",
+        "Identify domain and range of a function.",
+        "Evaluate functions: f(x) notation.",
+        "Distinguish between injective, surjective, and bijective functions.",
+        "Compose two functions f ∘ g.",
+        "Find the inverse of a function.",
+        "Understand and apply index laws (laws of exponents).",
+        "Simplify expressions involving powers and roots.",
+        "Define logarithms as inverse of exponentials.",
+        "Apply logarithm laws: product, quotient, power rules.",
+        "Solve exponential equations using logarithms.",
+        "Understand natural logarithm (ln) and base-10 logarithm.",
+        "Apply change of base formula.",
+        "Understand modular arithmetic and congruences.",
+        "Solve linear congruences.",
+        "Apply the Euclidean algorithm to find GCD.",
+        "State and apply Bezout's identity.",
+        "Understand and apply the Chinese Remainder Theorem.",
+        "Define prime numbers and composite numbers.",
+        "State the Fundamental Theorem of Arithmetic.",
+        "Understand proof by induction.",
+        "Apply strong induction.",
+        "Prove summation formulas using induction.",
+        "Define sequences and series.",
+        "Recognise arithmetic and geometric sequences.",
+        "Sum arithmetic and geometric series.",
+        "Understand convergence of infinite geometric series.",
+        "Define and evaluate factorials.",
+        "Apply the binomial theorem.",
+        "Use Pascal's triangle.",
+        "Solve basic counting problems using permutations and combinations.",
+        "Distinguish between permutations and combinations."
+      ]},
+      { num:2, label:'Coordinate Geometry & Lines', color:'#18a96e', items:[
+        "Plot points on the Cartesian plane.",
+        "Find the distance between two points.",
+        "Find the midpoint of a line segment.",
+        "Calculate the gradient (slope) of a line.",
+        "Write the equation of a line in slope-intercept form.",
+        "Write the equation of a line in point-slope form.",
+        "Convert between different forms of line equations.",
+        "Determine if two lines are parallel or perpendicular.",
+        "Find the equation of a line parallel to a given line.",
+        "Find the equation of a line perpendicular to a given line.",
+        "Solve simultaneous linear equations graphically.",
+        "Solve simultaneous linear equations algebraically.",
+        "Find the intersection point of two lines.",
+        "Understand and apply the concept of collinearity.",
+        "Calculate the area of a triangle given vertices.",
+        "Find the equation of a circle given centre and radius.",
+        "Expand and recognise the general form of a circle equation.",
+        "Find the centre and radius from the general form.",
+        "Determine if a point lies inside, on, or outside a circle.",
+        "Find points of intersection of a line and a circle.",
+        "Find the equation of a tangent to a circle at a point.",
+        "Understand the relationship between a tangent and radius.",
+        "Apply coordinate geometry to solve geometric problems.",
+        "Understand locus and describe it algebraically.",
+        "Find the perpendicular bisector of a line segment.",
+        "Apply distance formula to verify geometric properties.",
+        "Recognise and classify conic sections."
+      ]},
+      { num:3, label:'Quadratic Functions', color:'#d95a08', items:[
+        "Define a quadratic function f(x) = ax² + bx + c.",
+        "Identify the vertex, axis of symmetry, and direction of opening.",
+        "Sketch the parabola of a quadratic function.",
+        "Convert between standard and vertex form (completing the square).",
+        "Solve quadratic equations by factoring.",
+        "Solve quadratic equations using the quadratic formula.",
+        "Solve quadratic equations by completing the square.",
+        "Interpret the discriminant to determine the nature of roots.",
+        "Find the sum and product of roots using Vieta's formulas.",
+        "Solve problems involving quadratic inequalities.",
+        "Find the maximum or minimum value of a quadratic function.",
+        "Apply quadratics to real-world optimisation problems.",
+        "Understand and sketch transformations of y = x².",
+        "Recognise the effect of a, h, k in y = a(x−h)² + k.",
+        "Find the x-intercepts (roots/zeros) of a quadratic.",
+        "Find the y-intercept of a quadratic.",
+        "Determine the range of a quadratic function.",
+        "Solve simultaneous equations where one is quadratic.",
+        "Recognise and work with complex/imaginary roots.",
+        "Form a quadratic equation given its roots."
+      ]},
+      { num:4, label:'Polynomials', color:'#2e8fe0', items:[
+        "Define a polynomial and identify its degree and coefficients.",
+        "Add and subtract polynomials.",
+        "Multiply polynomials.",
+        "Perform polynomial long division.",
+        "Apply the remainder theorem.",
+        "Apply the factor theorem.",
+        "Fully factorise a polynomial.",
+        "Find rational roots using the rational root theorem.",
+        "Sketch graphs of polynomial functions.",
+        "Identify end behaviour of a polynomial.",
+        "Determine the number of real roots from a graph.",
+        "Understand multiplicity of roots.",
+        "Solve polynomial equations.",
+        "Solve polynomial inequalities.",
+        "Understand the fundamental theorem of algebra.",
+        "Work with complex roots of polynomials.",
+        "Perform synthetic division.",
+        "Decompose rational expressions into partial fractions (linear factors).",
+        "Decompose rational expressions into partial fractions (repeated/quadratic factors).",
+        "Simplify rational expressions.",
+        "Solve rational equations.",
+        "Identify vertical and horizontal asymptotes.",
+        "Sketch graphs of simple rational functions.",
+        "Recognise oblique (slant) asymptotes.",
+        "Connect polynomial roots to graphical features.",
+        "Understand and apply the binomial expansion for (a+b)ⁿ.",
+      ]}
+    ]
+  };
+
+  SUBJECTS[ctId] = {
+    name: 'Computational Thinking', emoji: '⟨/⟩', color: '#18a96e',
+    weeks: [
+      { num:1, label:'Foundations', color:'#18a96e', items:[
+        "Define computational thinking and its four pillars.",
+        "Explain decomposition: breaking problems into smaller parts.",
+        "Apply pattern recognition to identify similarities across problems.",
+        "Define abstraction and explain why irrelevant details are hidden.",
+        "Describe algorithmic thinking: step-by-step problem solving.",
+        "Write simple pseudocode for everyday tasks.",
+        "Represent algorithms using flowcharts.",
+        "Trace through a simple algorithm and predict output.",
+        "Identify inputs, processes, and outputs of a system.",
+        "Understand the difference between data and information.",
+      ]},
+      { num:2, label:'Algorithms & Logic', color:'#2e8fe0', items:[
+        "Define an algorithm and list its properties (finite, unambiguous, effective).",
+        "Write algorithms using sequence, selection, and iteration.",
+        "Trace algorithms with selection (if/else) structures.",
+        "Trace algorithms with iteration (while/for loops).",
+        "Understand nested loops and their time implications.",
+        "Apply boolean logic: AND, OR, NOT.",
+        "Construct and evaluate truth tables.",
+        "Use De Morgan's laws to simplify boolean expressions.",
+        "Understand the concept of a variable and data types.",
+        "Write and trace recursive algorithms.",
+      ]},
+      { num:3, label:'Data & Problem Solving', color:'#d95a08', items:[
+        "Represent data in binary, decimal, and hexadecimal.",
+        "Convert between number bases.",
+        "Understand how text, images, and audio are encoded digitally.",
+        "Apply linear search algorithm and analyse its efficiency.",
+        "Apply binary search algorithm and state its preconditions.",
+        "Apply bubble sort and trace its steps.",
+        "Apply merge sort and explain its divide-and-conquer approach.",
+        "Compare sorting algorithms by number of comparisons.",
+        "Define Big O notation and classify O(1), O(n), O(n²), O(log n).",
+        "Identify the most efficient algorithm for a given problem.",
+      ]}
+    ]
+  };
+
+  SUBJECTS[statId] = {
+    name: 'Statistics', emoji: 'μ', color: '#d95a08',
+    weeks: [
+      { num:1, label:'Descriptive Statistics', color:'#d95a08', items:[
+        "Distinguish between population and sample.",
+        "Define and classify types of data: nominal, ordinal, interval, ratio.",
+        "Calculate mean, median, and mode for a dataset.",
+        "Choose the appropriate measure of central tendency.",
+        "Calculate range, variance, and standard deviation.",
+        "Interpret standard deviation in context.",
+        "Construct and read frequency tables.",
+        "Construct and interpret histograms.",
+        "Construct and interpret box plots.",
+        "Identify outliers using IQR method.",
+        "Calculate and interpret percentiles and quartiles.",
+        "Describe the shape of a distribution: symmetric, skewed, bimodal.",
+      ]},
+      { num:2, label:'Probability', color:'#7c6af5', items:[
+        "Define probability and the sample space.",
+        "Calculate probabilities of simple events.",
+        "Apply the addition rule for mutually exclusive events.",
+        "Apply the general addition rule P(A∪B) = P(A)+P(B)−P(A∩B).",
+        "Define conditional probability P(A|B).",
+        "Apply the multiplication rule for independent events.",
+        "Apply Bayes' theorem to update probabilities.",
+        "Construct and use probability trees.",
+        "Define and apply the binomial distribution.",
+        "Define and apply the normal distribution.",
+        "Use z-scores to find probabilities.",
+        "Apply the Central Limit Theorem.",
+      ]},
+      { num:3, label:'Inference', color:'#2e8fe0', items:[
+        "Distinguish between point estimate and interval estimate.",
+        "Construct a confidence interval for a population mean.",
+        "Interpret a confidence interval correctly.",
+        "State null and alternative hypotheses.",
+        "Define Type I and Type II errors.",
+        "Understand the p-value and significance level α.",
+        "Perform a one-sample z-test.",
+        "Perform a one-sample t-test.",
+        "Perform a two-sample t-test.",
+        "Perform a chi-square test for independence.",
+        "Calculate and interpret Pearson's correlation coefficient.",
+        "Fit a simple linear regression model and interpret coefficients.",
+      ]}
+    ]
+  };
+
+  SUBJECTS[pyId] = {
+    name: 'Python', emoji: '🐍', color: '#2e8fe0',
+    weeks: [
+      { num:1, label:'Fundamentals', color:'#2e8fe0', items:[
+        "Install Python and run a script from the terminal.",
+        "Understand the Python REPL and interactive mode.",
+        "Use print() to display output.",
+        "Declare variables and assign values.",
+        "Understand Python's dynamic typing.",
+        "Work with int, float, str, and bool data types.",
+        "Perform arithmetic operations: +, -, *, /, //, %, **.",
+        "Use comparison operators: ==, !=, <, >, <=, >=.",
+        "Use logical operators: and, or, not.",
+        "Use string methods: len(), upper(), lower(), strip(), split().",
+        "Use f-strings for string formatting.",
+        "Read user input with input().",
+        "Write if, elif, else conditional statements.",
+        "Write for loops to iterate over ranges and sequences.",
+        "Write while loops with proper termination conditions.",
+        "Use break, continue, and pass in loops.",
+        "Define functions with def and return values.",
+        "Understand scope: local vs global variables.",
+        "Use default and keyword arguments in functions.",
+        "Import and use standard library modules (math, random, os).",
+      ]},
+      { num:2, label:'Data Structures', color:'#18a96e', items:[
+        "Create and index lists.",
+        "Slice lists using [start:end:step] notation.",
+        "Modify lists: append(), insert(), remove(), pop().",
+        "Use list comprehensions.",
+        "Sort lists with sort() and sorted().",
+        "Create and access tuples.",
+        "Understand tuple immutability and when to use tuples.",
+        "Create and access dictionaries.",
+        "Add, update, and delete dictionary entries.",
+        "Iterate over dictionary keys, values, and items.",
+        "Use dict comprehensions.",
+        "Create and perform operations on sets.",
+        "Understand set operations: union, intersection, difference.",
+        "Choose the right data structure for a given problem.",
+        "Nest data structures (list of dicts, dict of lists).",
+      ]},
+      { num:3, label:'OOP & Files', color:'#d95a08', items:[
+        "Understand the principles of Object-Oriented Programming.",
+        "Define a class with attributes and methods.",
+        "Create instances (objects) of a class.",
+        "Use __init__ to initialise objects.",
+        "Understand self and instance vs class variables.",
+        "Implement inheritance and method overriding.",
+        "Use super() to call parent class methods.",
+        "Understand encapsulation and name mangling.",
+        "Open and read files using open() and with statement.",
+        "Write to files in text and append modes.",
+        "Parse CSV files using the csv module.",
+        "Handle exceptions with try, except, finally.",
+        "Raise custom exceptions.",
+        "Use list/dict/set comprehensions in real problems.",
+        "Write and run unit tests using unittest.",
+      ]}
+    ]
+  };
+
+  currentSubjectId = mathId;
+  saveState();
+}
+// ── CURRENT DATA HELPER ──
+function getCurrentSubject() { return SUBJECTS[currentSubjectId]; }
+function getCurrentWeeks()   { return getCurrentSubject()?.weeks || []; }
+
+// ── SUBJECT SWITCHER UI ──
+function buildSubjectBar() {
+  const bar = document.getElementById('subjectBar');
+  bar.innerHTML = '';
+  Object.entries(SUBJECTS).forEach(([id, sub]) => {
+    const btn = document.createElement('button');
+    btn.className = 'subject-tab' + (id === currentSubjectId ? ' active' : '');
+    btn.textContent = (sub.emoji ? sub.emoji + ' ' : '') + sub.name;
+    btn.onclick = () => switchSubject(id);
+    bar.appendChild(btn);
+  });
+  const addBtn = document.createElement('button');
+  addBtn.className = 'subject-tab-add';
+  addBtn.textContent = '+ Subject';
+  addBtn.onclick = openSubjectModal;
+  bar.appendChild(addBtn);
+}
+
+function switchSubject(id) {
+  currentSubjectId = id;
+  saveState();
+  buildSubjectBar();
+  // update header
+  const sub = getCurrentSubject();
+  document.getElementById('eyebrowSubject').textContent = sub.name;
+  document.getElementById('headerTitle').innerHTML = sub.emoji
+    ? `${sub.emoji} <em>${sub.name}</em>`
+    : `<em>${sub.name}</em>`;
+  document.getElementById('accentBar').style.background = sub.color;
+  document.documentElement.style.setProperty('--accent', sub.color);
+  // update DATA shim for compatibility
+  syncDataShim();
+  buildUI();
+  updateStats();
+  showWeek('all');
+  rotateQuote();
+}
+
+// DATA shim so existing functions work
+function syncDataShim() {
+  const sub = getCurrentSubject();
+  // rebuild ring area and tab group for new subject's weeks
+  rebuildWeekNav();
+}
+
+// ── REBUILD WEEK NAV (rings + tabs) ──
+function rebuildWeekNav() {
+  const weeks = getCurrentWeeks();
+  const ringArea = document.getElementById('ringArea');
+  const tabGroup = document.getElementById('tabGroup');
+
+  ringArea.innerHTML = '';
+  tabGroup.innerHTML = `<button class="tab active" data-week="all" onclick="showWeek('all')">All <span class="mini-prog" id="tabProgAll"></span></button>`;
+
+  weeks.forEach(week => {
+    const circ = 125.7;
+    const rw = document.createElement('div');
+    rw.className = 'ring-card';
+    rw.onclick = () => showWeek(String(week.num));
+    rw.innerHTML = `
+      <svg class="ring-svg" width="50" height="50" viewBox="0 0 50 50">
+        <circle class="ring-track" cx="25" cy="25" r="20"/>
+        <circle class="ring-fill" id="ring${week.num}" cx="25" cy="25" r="20" stroke="${week.color}" stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
+      </svg>
+      <div class="ring-info">
+        <div class="ring-wk">Week ${week.num}</div>
+        <div class="ring-pct" id="rpct${week.num}">0%</div>
+        <div class="ring-cnt" id="rcnt${week.num}"></div>
+      </div>`;
+    ringArea.appendChild(rw);
+
+    const tab = document.createElement('button');
+    tab.className = 'tab';
+    tab.dataset.week = String(week.num);
+    tab.onclick = () => showWeek(String(week.num));
+    tab.innerHTML = `Wk ${week.num} <span class="mini-prog" id="tabProg${week.num}"></span>`;
+    tabGroup.appendChild(tab);
+  });
+}
+
+// ── BUILD UI ──
+let currentWeek = 'all';
+
+function buildUI() {
+  const container = document.getElementById('mainContent');
+  container.innerHTML = '';
+  const weeks = getCurrentWeeks();
+  weeks.forEach(week => {
+    const sec = document.createElement('div');
+    sec.className = 'week-section visible';
+    sec.id = `week-sec-${week.num}`;
+    const totalInWeek = week.items.length;
+    const doneInWeek = week.items.filter((_, i) => getItemState(week.num, i).done).length;
+    const pct = totalInWeek > 0 ? Math.round(doneInWeek/totalInWeek*100) : 0;
+
+    const header = document.createElement('div');
+    header.className = 'week-header';
+    header.style.setProperty('--wc', week.color);
+    header.style.cursor = 'pointer';
+    header.style.borderRadius = 'var(--r)';
+    header.style.borderBottom = '1px solid var(--border)';
+    header.innerHTML = `
+      <div class="week-pip" style="background:${week.color}"></div>
+      <div class="week-title">Week ${week.num} <span style="color:var(--text-3);font-weight:300;font-style:italic;"> — ${week.label}</span></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+        <div class="week-pct-bar" style="width:80px;height:4px;background:var(--border);border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:${week.color};border-radius:4px;transition:width 0.4s;"></div>
+        </div>
+        <div class="week-meta"><span>${doneInWeek}/${totalInWeek}</span> done</div>
+        <div class="week-chevron" style="color:var(--text-3);transition:transform 0.2s;font-size:0.7rem;">▾</div>
+        <button class="week-ctx-btn" onclick="openWeekCtxMenu(${week.num},event)" title="Week options">···</button>
+      </div>`;
+
+    const itemsWrap = document.createElement('div');
+    itemsWrap.className = 'week-items';
+    itemsWrap.id = `items-w${week.num}`;
+
+    header.addEventListener('click', (e) => {
+      if (e.target.closest('.week-ctx-btn')) return;
+      const isOpen = itemsWrap.style.display === 'block';
+      itemsWrap.style.display = isOpen ? 'none' : 'block';
+      header.style.borderRadius = isOpen ? 'var(--r)' : 'var(--r) var(--r) 0 0';
+      header.style.borderBottom = isOpen ? '1px solid var(--border)' : 'none';
+      const chev = header.querySelector('.week-chevron');
+      if (chev) chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+    });
+
+    week.items.forEach((text, idx) => {
+      const ist = getItemState(week.num, idx);
+      const diffScore = ist.attempts * (5 - ist.conf);
+      const itemEl = document.createElement('div');
+      itemEl.className = `item w${week.num}${ist.done ? ' completed' : ''}`;
+      itemEl.id = `item-w${week.num}-${idx}`;
+      itemEl.innerHTML = buildItemInnerHTML(week.num, idx, text, ist, diffScore);
+      itemsWrap.appendChild(itemEl);
+    });
+
+    // Inline add-outcome row (hidden by default, opened from ⋯ menu)
+    const inlineAddRow = document.createElement('div');
+    inlineAddRow.className = 'inline-add-row';
+    inlineAddRow.id = `inline-add-w${week.num}`;
+    inlineAddRow.style.display = 'none';
+    inlineAddRow.innerHTML = `
+      <input class="inline-add-input" id="inline-input-w${week.num}"
+        placeholder="New outcome… (Enter to add, Esc to dismiss)"
+        autocomplete="off" spellcheck="false">
+      <span class="inline-add-hint"><kbd>↵</kbd> add &nbsp; <kbd>Esc</kbd> dismiss</span>`;
+    inlineAddRow.querySelector('input').addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        const val = ev.target.value.trim();
+        if (val) { addInlineOutcome(week.num, val); ev.target.value = ''; ev.target.focus(); }
+      } else if (ev.key === 'Escape') {
+        closeInlineAdd(week.num);
+      }
+    });
+
+    if (week.items.length === 0) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r,10px) var(--r,10px);padding:2.5rem 1.5rem;text-align:center;background:var(--surface);';
+      empty.id = `empty-w${week.num}`;
+      empty.innerHTML = `<div style="font-size:1.5rem;margin-bottom:10px;opacity:0.25;">◎</div>
+        <div style="font-family:Fraunces,serif;font-size:0.95rem;color:var(--text-2);margin-bottom:4px;">No outcomes yet</div>
+        <div style="font-size:0.68rem;color:var(--text-3);">Use <strong>⋯</strong> → + Add Outcome to get started.</div>`;
+      // attach inline-add to empty state wrapper
+      const emptyWrap = document.createElement('div');
+      emptyWrap.id = `items-w${week.num}`;
+      emptyWrap.className = 'week-items';
+      emptyWrap.style.display = 'none';
+      emptyWrap.appendChild(empty);
+      emptyWrap.appendChild(inlineAddRow);
+      sec.appendChild(header);
+      sec.appendChild(emptyWrap);
+    } else {
+      itemsWrap.appendChild(inlineAddRow);
+      sec.appendChild(header);
+      itemsWrap.style.display = 'none';
+      sec.appendChild(itemsWrap);
+    }
+    container.appendChild(sec);
+  });
+}
+
+// ── PANEL TABS ──
+function switchPanelTab(w, i, tab, e) {
+  e.stopPropagation();
+  const panel = document.getElementById(`panel-w${w}-${i}`);
+  panel.querySelectorAll('.panel-tab-btn').forEach((btn,bi) => {
+    const tabs = ['details','mastery','recall','mistakes'];
+    btn.classList.toggle('active', tabs[bi] === tab);
+  });
+  panel.querySelectorAll('.panel-section').forEach(sec => sec.classList.remove('active'));
+  const active = document.getElementById(`ptab-${tab}-w${w}-${i}`);
+  if (active) active.classList.add('active');
+}
+
+// ── MASTERY / ATTEMPTS ──
+function setMastery(w, i, val, e) {
+  e.stopPropagation();
+  const ist = getItemState(w, i);
+  ist.conf = ist.conf === val ? 0 : val;
+  saveState();
+  // sync mastery stars
+  document.querySelectorAll(`#mstars-w${w}-${i} .mstar`).forEach((s,idx) => s.classList.toggle('lit', idx < ist.conf));
+  // sync detail stars
+  document.querySelectorAll(`#stars-w${w}-${i} .star`).forEach((s,idx) => s.classList.toggle('lit', idx < ist.conf));
+  const lbl = document.getElementById(`mlabel-w${w}-${i}`);
+  if (lbl) lbl.innerHTML = ist.conf>0
+    ? `<span class="level">${MASTERY_LABELS[ist.conf]}</span> <span style="color:var(--text-3)">— ${MASTERY_DESC[ist.conf]}</span>`
+    : '<span style="color:var(--text-3)">— tap a star to rate</span>';
+  const cflbl = document.getElementById(`cflabel-w${w}-${i}`);
+  if (cflbl) cflbl.textContent = ['— tap a star to rate','😵 Confused','😕 Getting started','🤔 Getting there','😊 Almost got it','🏆 Mastered!'][ist.conf]||'— tap a star to rate';
+  updateDiffScore(w, i);
+  updateStats();
+}
+
+function addAttempt(w, i, e) {
+  e.stopPropagation();
+  const ist = getItemState(w, i);
+  ist.attempts++;
+  saveState();
+  const el = document.getElementById(`attempts-w${w}-${i}`);
+  if (el) el.textContent = ist.attempts;
+  updateDiffScore(w, i);
+}
+
+function resetAttempts(w, i, e) {
+  e.stopPropagation();
+  const ist = getItemState(w, i);
+  if (ist.attempts === 0) return;
+  ist.attempts = 0;
+  saveState();
+  const el = document.getElementById(`attempts-w${w}-${i}`);
+  if (el) el.textContent = 0;
+  updateDiffScore(w, i);
+}
+
+function updateDiffScore(w, i) {
+  const ist = getItemState(w, i);
+  const score = ist.attempts * (5 - ist.conf);
+  const scoreEl = document.getElementById(`dsscore-w${w}-${i}`);
+  const fillEl = document.getElementById(`dsfill-w${w}-${i}`);
+  if (scoreEl) scoreEl.textContent = ist.attempts>0||ist.conf>0 ? score : '—';
+  if (fillEl) {
+    const pct = Math.min(100, (score/40)*100);
+    fillEl.style.width = pct + '%';
+    fillEl.style.background = score>=20 ? '#dc2626' : score>=10 ? '#f59e0b' : 'var(--green)';
+  }
+}
+
+// ── RECALL & MISTAKES ──
+function setRecall(w, i, val) {
+  getItemState(w, i).recall = val;
+  saveState();
+}
+
+function addMistake(w, i, e) {
+  e.stopPropagation();
+  const input = document.getElementById(`minput-w${w}-${i}`);
+  const text = input.value.trim();
+  if (!text) return;
+  const ist = getItemState(w, i);
+  ist.mistakes.push(text);
+  input.value = '';
+  saveState();
+  renderMistakes(w, i);
+  // update tab badge
+  const tabBtn = document.querySelector(`#panel-w${w}-${i} .panel-tab-btn:last-child`);
+  if (tabBtn) tabBtn.innerHTML = `Mistakes <span style="color:#dc2626;font-size:0.55rem;">(${ist.mistakes.length})</span>`;
+}
+
+function removeMistake(w, i, mi, e) {
+  e.stopPropagation();
+  const ist = getItemState(w, i);
+  ist.mistakes.splice(mi, 1);
+  saveState();
+  renderMistakes(w, i);
+  const tabBtn = document.querySelector(`#panel-w${w}-${i} .panel-tab-btn:last-child`);
+  if (tabBtn) tabBtn.innerHTML = ist.mistakes.length>0
+    ? `Mistakes <span style="color:#dc2626;font-size:0.55rem;">(${ist.mistakes.length})</span>`
+    : 'Mistakes';
+}
+
+function renderMistakes(w, i) {
+  const ist = getItemState(w, i);
+  const list = document.getElementById(`mlist-w${w}-${i}`);
+  if (!list) return;
+  list.innerHTML = ist.mistakes.length===0
+    ? '<div style="font-size:0.65rem;color:var(--text-3);font-style:italic;">No mistakes logged yet.</div>'
+    : ist.mistakes.map((m,mi)=>`<div class="mistake-entry"><span class="me-num">${String(mi+1).padStart(2,'0')}</span><span class="me-text">${m}</span><button class="me-del" onclick="removeMistake(${w},${i},${mi},event)">×</button></div>`).join('');
+}
+
+// ── EXISTING FUNCTIONS (unchanged) ──
+function togglePanel(w, i, e) {
+  e.stopPropagation();
+  const panel = document.getElementById(`panel-w${w}-${i}`);
+  const btn = document.getElementById(`ebtn-w${w}-${i}`);
+  panel.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+function toggleDone(w, i, e) {
+  e.stopPropagation();
+  const ist = getItemState(w, i);
+  ist.done = !ist.done;
+  saveState();
+  const itemEl = document.getElementById(`item-w${w}-${i}`);
+  const cbEl = document.getElementById(`cb-w${w}-${i}`);
+  if (itemEl) itemEl.classList.toggle('completed', ist.done);
+  if (cbEl) cbEl.classList.toggle('checked', ist.done);
+  if (ist.done) showXPPop(w, i);
+  updateStats();
+  updateWeekHeader(w);
+  checkWeekComplete(w);
+}
+
+function setConf(w, i, val, e) {
+  e.stopPropagation();
+  const ist = getItemState(w, i);
+  ist.conf = ist.conf === val ? 0 : val;
+  saveState();
+  document.querySelectorAll(`#stars-w${w}-${i} .star`).forEach((s,idx) => s.classList.toggle('lit', idx < ist.conf));
+  document.querySelectorAll(`#mstars-w${w}-${i} .mstar`).forEach((s,idx) => s.classList.toggle('lit', idx < ist.conf));
+  const cflbl = document.getElementById(`cflabel-w${w}-${i}`);
+  if (cflbl) cflbl.textContent = ['— tap a star to rate','😵 Confused','😕 Getting started','🤔 Getting there','😊 Almost got it','🏆 Mastered!'][ist.conf]||'— tap a star to rate';
+  const mlbl = document.getElementById(`mlabel-w${w}-${i}`);
+  if (mlbl) mlbl.innerHTML = ist.conf>0
+    ? `<span class="level">${MASTERY_LABELS[ist.conf]}</span> <span style="color:var(--text-3)">— ${MASTERY_DESC[ist.conf]}</span>`
+    : '<span style="color:var(--text-3)">— tap a star to rate</span>';
+  updateDiffScore(w, i);
+  updateStats();
+}
+
+function setTag(w, i, tag, e) {
+  e.stopPropagation();
+  const ist = getItemState(w, i);
+  ist.tag = ist.tag === tag ? '' : tag;
+  saveState();
+  const panel = document.getElementById(`panel-w${w}-${i}`);
+  const clsMap = {'Easy':'t-easy','Medium':'t-medium','Hard':'t-hard','To Review':'t-todo','Need Help':'t-review'};
+  panel.querySelectorAll('.tag').forEach(el => {
+    el.classList.remove('active','t-easy','t-medium','t-hard','t-todo','t-review');
+    if (el.textContent === ist.tag) el.classList.add('active', clsMap[ist.tag]||'');
+  });
+  updateQueueCounts();
+}
+
+function setNote(w, i, val) {
+  getItemState(w, i).note = val;
+  saveState();
+}
+
+function showXPPop(w, i) {
+  const itemEl = document.getElementById(`item-w${w}-${i}`);
+  if (!itemEl) return;
+  const pop = document.createElement('div');
+  pop.className = 'xp-pop';
+  pop.textContent = '+10 XP';
+  itemEl.appendChild(pop);
+  setTimeout(() => pop.remove(), 950);
+}
+
+function checkWeekComplete(wNum) {
+  const weeks = getCurrentWeeks();
+  const week = weeks.find(w => w.num === wNum);
+  if (!week) return;
+  const total = week.items.length;
+  const done = week.items.filter((_, i) => getItemState(wNum, i).done).length;
+  if (done === total && total > 0) launchConfetti();
+}
+
+function launchConfetti() {
+  for (let n = 0; n < 60; n++) {
+    const p = document.createElement('div');
+    p.style.cssText = `position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9999;left:${Math.random()*100}vw;top:-10px;background:${['#7c6af5','#18a96e','#f59e0b','#2e8fe0','#e879a0'][Math.floor(Math.random()*5)]};animation:fall${(n%3)+1} ${1.2+Math.random()*0.8}s ease forwards;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 2200);
+  }
+}
+
+function updateStats() {
+  const weeks = getCurrentWeeks();
+  let total=0, done=0, confSum=0, confCount=0;
+  weeks.forEach(week => {
+    week.items.forEach((_,i) => {
+      total++;
+      const ist = getItemState(week.num, i);
+      if (ist.done) done++;
+      if (ist.conf > 0) { confSum += ist.conf; confCount++; }
+    });
+  });
+  const pct = total>0 ? Math.round(done/total*100) : 0;
+  const xp = done*10;
+  const avgConf = confCount>0 ? (confSum/confCount).toFixed(1) : '—';
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statXP').textContent = xp;
+  document.getElementById('statConf').textContent = avgConf + (confCount>0?'★':'');
+  document.getElementById('overallPct').innerHTML = pct + '<sup>%</sup>';
+  document.getElementById('overallBar').style.width = pct + '%';
+  document.getElementById('bottomFill').style.width = pct + '%';
+  document.getElementById('progLabel').textContent = pct + '%';
+
+  const nudge = document.getElementById('nudgeBanner');
+  if (nudge) nudge.style.display = done===0 ? '' : 'none';
+
+  if (pct===100) {
+    document.getElementById('bottomRight').textContent = '🏆 DONE!';
+    document.getElementById('downloadBanner').style.display = '';
+  } else if (pct>=75) {
+    document.getElementById('bottomRight').textContent = '🔥 SO CLOSE';
+  } else if (pct>=50) {
+    document.getElementById('bottomRight').textContent = '⚡ HALFWAY!';
+  } else {
+    document.getElementById('bottomRight').textContent = '+ ADD WEEK';
+  }
+  updateRings();
+  updateTabProgress();
+  updateQueueCounts();
+}
+
+function updateRings() {
+  const weeks = getCurrentWeeks();
+  weeks.forEach(week => {
+    const total = week.items.length;
+    const done = week.items.filter((_,i) => getItemState(week.num, i).done).length;
+    const pct = total>0 ? done/total : 0;
+    const circ = 125.7;
+    const offset = circ - pct*circ;
+    const ring = document.getElementById(`ring${week.num}`);
+    if (ring) ring.style.strokeDashoffset = offset;
+    const rpct = document.getElementById(`rpct${week.num}`);
+    if (rpct) rpct.textContent = Math.round(pct*100) + '%';
+    const rcnt = document.getElementById(`rcnt${week.num}`);
+    if (rcnt) rcnt.textContent = `${done}/${total}`;
+  });
+}
+
+function updateWeekHeader(wNum) {
+  const weeks = getCurrentWeeks();
+  const week = weeks.find(w => w.num === wNum);
+  if (!week) return;
+  const total = week.items.length;
+  const done = week.items.filter((_,i) => getItemState(wNum,i).done).length;
+  const pct = total>0 ? Math.round(done/total*100) : 0;
+  const sec = document.getElementById(`week-sec-${wNum}`);
+  if (sec) {
+    const metaSpan = sec.querySelector('.week-meta span');
+    if (metaSpan) metaSpan.textContent = `${done}/${total}`;
+    const pctBar = sec.querySelector('.week-pct-bar div');
+    if (pctBar) pctBar.style.width = pct + '%';
+  }
+}
+
+function updateTabProgress() {
+  const weeks = getCurrentWeeks();
+  let total=0, done=0;
+  weeks.forEach(week => {
+    week.items.forEach((_,i) => {
+      total++;
+      if (getItemState(week.num, i).done) done++;
+    });
+  });
+  const el = document.getElementById('tabProgAll');
+  if (el) el.textContent = `${done}/${total}`;
+  weeks.forEach(week => {
+    const t = week.items.length;
+    const d = week.items.filter((_,i) => getItemState(week.num,i).done).length;
+    const tp = document.getElementById(`tabProg${week.num}`);
+    if (tp) tp.textContent = `${d}/${t}`;
+  });
+}
+
+function updateQueueCounts() {
+  const weeks = getCurrentWeeks();
+  const needHelp = weeks.reduce((acc,week) => acc + week.items.filter((_,i) => getItemState(week.num,i).tag==='Need Help').length, 0);
+  const toReview = weeks.reduce((acc,week) => acc + week.items.filter((_,i) => getItemState(week.num,i).tag==='To Review').length, 0);
+  const nh = document.getElementById('tabProgNeedHelp');
+  const tr = document.getElementById('tabProgToReview');
+  if (nh) nh.textContent = needHelp>0 ? needHelp : '';
+  if (tr) tr.textContent = toReview>0 ? toReview : '';
+}
+
+function showWeek(w) {
+  currentWeek = w;
+  document.getElementById('mainContent').style.display = '';
+  document.getElementById('queuePanel').style.display = 'none';
+  document.getElementById('searchInput').disabled = false;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.week===w));
+  document.querySelectorAll('.queue-btn').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.ring-card').forEach((card,idx) => {
+    const weeks = getCurrentWeeks();
+    const week = weeks[idx];
+    const isActive = week && w===String(week.num);
+    card.classList.toggle('active', isActive);
+    const pctEl = card.querySelector('.ring-pct');
+    if (pctEl) pctEl.style.color = isActive && week ? week.color : 'var(--text)';
+  });
+  let scrollTargetSec = null;
+  document.querySelectorAll('.week-section').forEach(sec => {
+    const wNum = sec.id.replace('week-sec-','');
+    const itemsWrap = document.getElementById(`items-w${wNum}`);
+    const header = sec.querySelector('.week-header');
+    const chev = header ? header.querySelector('.week-chevron') : null;
+    if (w==='all') {
+      sec.style.display = 'block';
+      if (itemsWrap) itemsWrap.style.display = 'none';
+      if (header) { header.style.borderRadius='var(--r)'; header.style.borderBottom='1px solid var(--border)'; }
+      if (chev) chev.style.transform = '';
+    } else {
+      const isMatch = wNum===w;
+      sec.style.display = isMatch ? 'block' : 'none';
+      if (isMatch) {
+        if (itemsWrap) itemsWrap.style.display = 'block';
+        if (header) { header.style.borderRadius='var(--r) var(--r) 0 0'; header.style.borderBottom='none'; }
+        if (chev) chev.style.transform = 'rotate(180deg)';
+        scrollTargetSec = sec;
+      }
+    }
+  });
+  // Scroll the matched week into view just below the sticky toolbar
+  if (scrollTargetSec) {
+    requestAnimationFrame(() => {
+      const toolbar = document.querySelector('.toolbar');
+      const toolbarBottom = toolbar ? toolbar.offsetTop + toolbar.offsetHeight : 0;
+      const secOffsetTop = scrollTargetSec.offsetTop;
+      window.scrollTo({ top: secOffsetTop - toolbarBottom - 16, behavior: 'smooth' });
+    });
+  }
+}
+
+function filterItems() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  if (q) {
+    document.querySelectorAll('.week-section').forEach(sec => {
+      sec.style.display = 'block';
+      const wNum = sec.id.replace('week-sec-','');
+      const iw = document.getElementById(`items-w${wNum}`);
+      const h = sec.querySelector('.week-header');
+      const ch = h ? h.querySelector('.week-chevron') : null;
+      if (iw) iw.style.display = 'block';
+      if (h) { h.style.borderRadius='var(--r) var(--r) 0 0'; h.style.borderBottom='none'; }
+      if (ch) ch.style.transform = 'rotate(180deg)';
+    });
+    document.querySelectorAll('.item').forEach(el => {
+      const text = el.querySelector('.item-text').textContent.toLowerCase();
+      el.style.display = text.includes(q) ? 'block' : 'none';
+    });
+  } else {
+    document.querySelectorAll('.item').forEach(el => el.style.display='block');
+    showWeek(currentWeek);
+  }
+}
+
+// ── SUBJECT MODAL ──
+function openSubjectModal() {
+  document.getElementById('subjectModal').classList.add('open');
+  document.getElementById('newSubjectName').focus();
+}
+function closeSubjectModal() {
+  document.getElementById('subjectModal').classList.remove('open');
+  document.getElementById('newSubjectName').value = '';
+  document.getElementById('newSubjectEmoji').value = '';
+  document.getElementById('newSubjectOutcomes').value = '';
+}
+function submitNewSubject() {
+  const name = document.getElementById('newSubjectName').value.trim();
+  if (!name) return;
+  const emoji = document.getElementById('newSubjectEmoji').value.trim();
+  const outcomesRaw = document.getElementById('newSubjectOutcomes').value.trim();
+  const items = outcomesRaw ? outcomesRaw.split('\n').map(l=>l.trim()).filter(Boolean) : [];
+  const id = 'sub_' + Date.now();
+  const color = WEEK_COLORS[Object.keys(SUBJECTS).length % WEEK_COLORS.length];
+  SUBJECTS[id] = {
+    name, emoji, color,
+    weeks: items.length > 0 ? [{
+      num: 1,
+      label: 'Week 1',
+      color,
+      items
+    }] : []
+  };
+  currentSubjectId = id;
+  saveState();
+  closeSubjectModal();
+  buildSubjectBar();
+  rebuildWeekNav();
+  buildUI();
+  updateStats();
+  showWeek('all');
+  // update header
+  document.getElementById('eyebrowSubject').textContent = name;
+  document.getElementById('headerTitle').innerHTML = emoji ? `${emoji} <em>${name}</em>` : `<em>${name}</em>`;
+  document.getElementById('accentBar').style.background = color;
+}
+
+// ── EDIT WEEK MODAL ──
+// ── EDIT WEEK MODAL ──
+let _editWeekDragSrc = null;
+let _editWeekColor = null;
+
+function openEditWeekModal(wNum, e) {
+  e.stopPropagation();
+  const weeks = getCurrentWeeks();
+  const week = weeks.find(w => w.num === wNum);
+  if (!week) return;
+  _editWeekColor = week.color;
+  document.getElementById('editWeekNum').value = wNum;
+  document.getElementById('editWeekLabel').value = week.label;
+  // build colour picker
+  const picker = document.getElementById('editWeekColorPicker');
+  picker.innerHTML = '';
+  WEEK_COLORS.forEach(c => {
+    const sw = document.createElement('div');
+    sw.className = 'color-swatch' + (c === week.color ? ' selected' : '');
+    sw.style.background = c;
+    sw.title = c;
+    sw.onclick = () => {
+      _editWeekColor = c;
+      picker.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+      sw.classList.add('selected');
+    };
+    picker.appendChild(sw);
+  });
+  renderEditWeekList(week.items);
+  document.getElementById('editWeekModal').classList.add('open');
+}
+
+function renderEditWeekList(items) {
+  const list = document.getElementById('editWeekOutcomesList');
+  const count = document.getElementById('editWeekCount');
+  if (count) count.textContent = `(${items.length})`;
+  list.innerHTML = '';
+  items.forEach((text, i) => {
+    const row = document.createElement('div');
+    row.className = 'ew-row';
+    row.draggable = true;
+    row.dataset.idx = i;
+    row.innerHTML = `
+      <span class="ew-drag" title="Drag to reorder">⠿⠿</span>
+      <span class="ew-num">${String(i+1).padStart(2,'0')}</span>
+      <input class="ew-input" value="${text.replace(/"/g,'&quot;').replace(/</g,'&lt;')}" spellcheck="false">
+      <button class="ew-del" title="Delete" onclick="deleteEditWeekRow(this)">×</button>`;
+    row.addEventListener('dragstart', ev => { _editWeekDragSrc = row; ev.dataTransfer.effectAllowed='move'; });
+    row.addEventListener('dragover', ev => { ev.preventDefault(); list.querySelectorAll('.ew-row').forEach(r=>r.classList.remove('drag-over')); row.classList.add('drag-over'); });
+    row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+    row.addEventListener('drop', ev => {
+      ev.preventDefault(); row.classList.remove('drag-over');
+      if (_editWeekDragSrc && _editWeekDragSrc !== row) {
+        const allRows = [...list.querySelectorAll('.ew-row')];
+        const fromIdx = allRows.indexOf(_editWeekDragSrc);
+        const toIdx = allRows.indexOf(row);
+        const its = getEditWeekItems();
+        const [moved] = its.splice(fromIdx, 1);
+        its.splice(toIdx, 0, moved);
+        renderEditWeekList(its);
+      }
+    });
+    list.appendChild(row);
+  });
+}
+
+function getEditWeekItems() {
+  return [...document.getElementById('editWeekOutcomesList').querySelectorAll('.ew-input')]
+    .map(inp => inp.value.trim()).filter(Boolean);
+}
+
+function deleteEditWeekRow(btn) {
+  const row = btn.closest('.ew-row');
+  const list = document.getElementById('editWeekOutcomesList');
+  const items = getEditWeekItems();
+  const rows = [...list.querySelectorAll('.ew-row')];
+  const idx = rows.indexOf(row);
+  if (idx > -1) items.splice(idx, 1);
+  renderEditWeekList(items);
+}
+
+function addEditWeekRow() {
+  const items = getEditWeekItems();
+  items.push('');
+  renderEditWeekList(items);
+  const inputs = document.getElementById('editWeekOutcomesList').querySelectorAll('.ew-input');
+  if (inputs.length > 0) { const last = inputs[inputs.length-1]; last.focus(); last.scrollIntoView({block:'nearest'}); }
+}
+
+function closeEditWeekModal() {
+  document.getElementById('editWeekModal').classList.remove('open');
+  _editWeekColor = null;
+}
+
+function submitEditWeek() {
+  const wNum = parseInt(document.getElementById('editWeekNum').value);
+  const label = document.getElementById('editWeekLabel').value.trim();
+  const items = getEditWeekItems();
+  const weeks = getCurrentWeeks();
+  const week = weeks.find(w => w.num === wNum);
+  if (!week) return;
+  week.label = label || week.label;
+  week.items = items;
+  if (_editWeekColor) week.color = _editWeekColor;
+  saveState();
+  closeEditWeekModal();
+  buildUI();
+  updateStats();
+  showWeek(currentWeek);
+  rebuildWeekNav();
+  updateRings();
+}
+
+// called from Delete Week button inside modal
+function deleteWeek() {
+  const wNum = parseInt(document.getElementById('editWeekNum').value);
+  _doDeleteWeek(wNum);
+}
+
+// called from trash icon on week header (with event)
+function confirmDeleteWeek(wNum, e) {
+  e.stopPropagation();
+  _doDeleteWeek(wNum);
+}
+
+function _doDeleteWeek(wNum) {
+  const weeks = getCurrentWeeks();
+  const week = weeks.find(w => w.num === wNum);
+  if (!week) return;
+  const outcomeCount = week.items.length;
+  const msg = outcomeCount > 0
+    ? `Delete "${week.label}"?\n\nThis will permanently remove ${outcomeCount} outcome${outcomeCount!==1?'s':''} and all their progress data.`
+    : `Delete "${week.label}"?`;
+  if (!confirm(msg)) return;
+  // remove week from subject
+  const sub = getCurrentSubject();
+  sub.weeks = sub.weeks.filter(w => w.num !== wNum);
+  // remove all state for this week
+  const st = getSubjectState();
+  Object.keys(st).forEach(k => {
+    if (k.startsWith(`w${wNum}_`)) delete st[k];
+  });
+  allState[currentSubjectId] = st;
+  saveState();
+  // close modal if open
+  document.getElementById('editWeekModal').classList.remove('open');
+  // if we were viewing the deleted week, go to all
+  if (currentWeek === String(wNum)) currentWeek = 'all';
+  rebuildWeekNav();
+  buildUI();
+  updateStats();
+  showWeek(currentWeek);
+  updateRings();
+}
+
+// ── ADD WEEK (bottom bar) ──
+let _addWeekColor = null;
+
+function handleBottomRight() { openAddWeekModal(); }
+function openAddWeekModal() {
+  const weeks = getCurrentWeeks();
+  const newNum = weeks.length > 0 ? Math.max(...weeks.map(w=>w.num)) + 1 : 1;
+  _addWeekColor = WEEK_COLORS[(newNum - 1) % WEEK_COLORS.length];
+
+  // Build colour picker
+  const picker = document.getElementById('addWeekColorPicker');
+  picker.innerHTML = '';
+  WEEK_COLORS.forEach(c => {
+    const sw = document.createElement('div');
+    sw.className = 'color-swatch' + (c === _addWeekColor ? ' selected' : '');
+    sw.style.background = c;
+    sw.title = c;
+    sw.onclick = () => {
+      _addWeekColor = c;
+      picker.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+      sw.classList.add('selected');
+    };
+    picker.appendChild(sw);
+  });
+
+  document.getElementById('addWeekModal').classList.add('open');
+  document.getElementById('newWeekLabel').value = '';
+  document.getElementById('newWeekOutcomes').value = '';
+  setTimeout(() => document.getElementById('newWeekLabel').focus(), 50);
+}
+function closeAddWeekModal() {
+  document.getElementById('addWeekModal').classList.remove('open');
+  _addWeekColor = null;
+}
+function submitNewWeek() {
+  const label = document.getElementById('newWeekLabel').value.trim();
+  const outcomesRaw = document.getElementById('newWeekOutcomes').value.trim();
+  const items = outcomesRaw ? outcomesRaw.split('\n').map(l=>l.trim()).filter(Boolean) : [];
+  if (!label) return;
+  const weeks = getCurrentWeeks();
+  const newNum = weeks.length > 0 ? Math.max(...weeks.map(w=>w.num)) + 1 : 1;
+  const color = _addWeekColor || WEEK_COLORS[(newNum - 1) % WEEK_COLORS.length];
+  weeks.push({ num: newNum, label, color, items });
+  saveState();
+  closeAddWeekModal();
+  rebuildWeekNav();
+  buildUI();
+  updateStats();
+  showWeek(String(newNum));
+}
+
+// ── CRUD (edit/delete outcome) ──
+function editItem(w, i, e) {
+  e.stopPropagation();
+  const weeks = getCurrentWeeks();
+  const week = weeks.find(wk => wk.num === w);
+  if (!week) return;
+  document.getElementById('editItemWeek').value = w;
+  document.getElementById('editItemIdx').value = i;
+  document.getElementById('editItemText').value = week.items[i];
+  document.getElementById('editItemModal').classList.add('open');
+}
+function closeEditItem() { document.getElementById('editItemModal').classList.remove('open'); }
+function submitEditItem() {
+  const w = parseInt(document.getElementById('editItemWeek').value);
+  const i = parseInt(document.getElementById('editItemIdx').value);
+  const text = document.getElementById('editItemText').value.trim();
+  if (!text) return;
+  const weeks = getCurrentWeeks();
+  const week = weeks.find(wk => wk.num === w);
+  if (!week) return;
+  week.items[i] = text;
+  saveState();
+  closeEditItem();
+  buildUI();
+  updateStats();
+  showWeek(currentWeek);
+}
+function deleteItem(w, i, e) {
+  e.stopPropagation();
+  if (!confirm('Delete this outcome?')) return;
+  const weeks = getCurrentWeeks();
+  const week = weeks.find(wk => wk.num === w);
+  if (!week) return;
+  week.items.splice(i, 1);
+  const st = getSubjectState();
+  // shift state keys
+  const newSt = {};
+  Object.entries(st).forEach(([k,v]) => {
+    const m = k.match(/^w(\d+)_i(\d+)$/);
+    if (!m) return;
+    const kw = parseInt(m[1]), ki = parseInt(m[2]);
+    if (kw === w && ki === i) return;
+    if (kw === w && ki > i) newSt[`w${kw}_i${ki-1}`] = v;
+    else newSt[k] = v;
+  });
+  allState[currentSubjectId] = newSt;
+  saveState();
+  buildUI();
+  updateStats();
+  showWeek(currentWeek);
+}
+
+// ── WEEK CONTEXT MENU ──
+let _ctxMenu = null;
+
+function openWeekCtxMenu(wNum, e) {
+  e.stopPropagation();
+  closeCtxMenu(); // close any existing
+
+  const btn = e.currentTarget;
+  const rect = btn.getBoundingClientRect();
+
+  const menu = document.createElement('div');
+  menu.className = 'ctx-menu';
+  menu.id = 'weekCtxMenu';
+  menu.innerHTML = `
+    <button class="ctx-item" onclick="ctxEdit(${wNum})">
+      <span class="ctx-icon">✏️</span> Edit Week
+    </button>
+    <button class="ctx-item" onclick="ctxAddOutcome(${wNum})">
+      <span class="ctx-icon">+</span> Add Outcome
+    </button>
+    <div class="ctx-divider"></div>
+    <button class="ctx-item danger" onclick="ctxDelete(${wNum})">
+      <span class="ctx-icon">🗑</span> Delete Week
+    </button>`;
+
+  document.body.appendChild(menu);
+  _ctxMenu = menu;
+
+  // Position: prefer below-right of button, flip if off-screen
+  const menuW = 165, menuH = 130;
+  let top = rect.bottom + 6;
+  let left = rect.right - menuW;
+  if (top + menuH > window.innerHeight - 12) top = rect.top - menuH - 6;
+  if (left < 8) left = 8;
+  menu.style.top = top + 'px';
+  menu.style.left = left + 'px';
+
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('click', closeCtxMenuOnOutside, { once: true, capture: true });
+  }, 0);
+}
+
+function closeCtxMenuOnOutside(e) {
+  if (_ctxMenu && !_ctxMenu.contains(e.target)) closeCtxMenu();
+  else if (_ctxMenu) document.addEventListener('click', closeCtxMenuOnOutside, { once: true, capture: true });
+}
+
+function closeCtxMenu() {
+  if (_ctxMenu) { _ctxMenu.remove(); _ctxMenu = null; }
+}
+
+function ctxEdit(wNum) {
+  closeCtxMenu();
+  // synthesize a dummy event since openEditWeekModal expects one for stopPropagation
+  openEditWeekModal(wNum, { stopPropagation: () => {} });
+}
+
+function ctxAddOutcome(wNum) {
+  closeCtxMenu();
+  openInlineAdd(wNum);
+}
+
+function ctxDelete(wNum) {
+  closeCtxMenu();
+  _doDeleteWeek(wNum);
+}
+
+// ── INLINE ADD OUTCOME ──
+function openInlineAdd(wNum) {
+  // Make sure the week is expanded first
+  const sec = document.getElementById(`week-sec-${wNum}`);
+  const itemsWrap = document.getElementById(`items-w${wNum}`);
+  const header = sec ? sec.querySelector('.week-header') : null;
+  const chev = header ? header.querySelector('.week-chevron') : null;
+  if (itemsWrap && itemsWrap.style.display === 'none') {
+    itemsWrap.style.display = 'block';
+    if (header) { header.style.borderRadius = 'var(--r) var(--r) 0 0'; header.style.borderBottom = 'none'; }
+    if (chev) chev.style.transform = 'rotate(180deg)';
+  }
+
+  const row = document.getElementById(`inline-add-w${wNum}`);
+  if (!row) return;
+  row.style.display = 'flex';
+  const input = document.getElementById(`inline-input-w${wNum}`);
+  if (input) {
+    requestAnimationFrame(() => {
+      input.focus();
+      input.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  }
+}
+
+function closeInlineAdd(wNum) {
+  const row = document.getElementById(`inline-add-w${wNum}`);
+  if (row) { row.style.display = 'none'; }
+  const input = document.getElementById(`inline-input-w${wNum}`);
+  if (input) input.value = '';
+}
+
+function addInlineOutcome(wNum, text) {
+  const weeks = getCurrentWeeks();
+  const week = weeks.find(w => w.num === wNum);
+  if (!week) return;
+  week.items.push(text);
+  saveState();
+  // Rebuild only this week's items list (no full rebuild to keep focus)
+  const itemsWrap = document.getElementById(`items-w${wNum}`);
+  if (itemsWrap) {
+    // Remove old items (keep inline-add row at end)
+    const inlineRow = document.getElementById(`inline-add-w${wNum}`);
+    // Clear and rebuild items
+    while (itemsWrap.firstChild) itemsWrap.removeChild(itemsWrap.firstChild);
+    // Re-render items
+    week.items.forEach((t, idx) => {
+      const ist = getItemState(wNum, idx);
+      const diffScore = ist.attempts * (5 - ist.conf);
+      const itemEl = document.createElement('div');
+      itemEl.className = `item w${wNum}${ist.done ? ' completed' : ''}`;
+      itemEl.id = `item-w${wNum}-${idx}`;
+      itemEl.innerHTML = buildItemInnerHTML(wNum, idx, t, ist, diffScore);
+      itemsWrap.appendChild(itemEl);
+    });
+    if (inlineRow) {
+      itemsWrap.appendChild(inlineRow);
+      inlineRow.style.display = 'flex';
+    }
+    // Remove empty state if present
+    const emptyEl = document.getElementById(`empty-w${wNum}`);
+    if (emptyEl) emptyEl.remove();
+  }
+  updateStats();
+  updateWeekHeader(wNum);
+  // Re-focus input (already handled by caller via ev.target.focus())
+}
+
+function buildItemInnerHTML(wNum, idx, text, ist, diffScore) {
+  const confLabels = ['— tap a star to rate','😵 Confused','😕 Getting started','🤔 Getting there','😊 Almost got it','🏆 Mastered!'];
+  return `
+    <div class="item-header">
+      <div class="cb w${wNum}${ist.done?' checked':''}" id="cb-w${wNum}-${idx}" onclick="toggleDone(${wNum},${idx},event)">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+          <polyline points="2,6 5,9 10,3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="item-num">${String(idx+1).padStart(2,'0')}</span>
+      <span class="item-text">${text}</span>
+      ${diffScore >= 10 ? `<span title="Difficulty Score: ${diffScore}" style="width:6px;height:6px;border-radius:50%;background:${diffScore>=20?'#dc2626':'#f59e0b'};flex-shrink:0;"></span>` : ''}
+      <button class="crud-btn edit" onclick="editItem(${wNum},${idx},event)" title="Edit">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5l2 2L4 10H2v-2L8.5 1.5z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="crud-btn del" onclick="deleteItem(${wNum},${idx},event)" title="Delete">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 5v4M7.5 5v4M3 3l.5 7h5L9 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="expand-btn" id="ebtn-w${wNum}-${idx}" onclick="togglePanel(${wNum},${idx},event)">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+          <polyline points="2,4 6,8 10,4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="item-panel" id="panel-w${wNum}-${idx}">
+      <div class="item-panel-tabs">
+        <button class="panel-tab-btn active" onclick="switchPanelTab(${wNum},${idx},'details',event)">Details</button>
+        <button class="panel-tab-btn" onclick="switchPanelTab(${wNum},${idx},'mastery',event)">Mastery</button>
+        <button class="panel-tab-btn" onclick="switchPanelTab(${wNum},${idx},'recall',event)">Recall</button>
+        <button class="panel-tab-btn" onclick="switchPanelTab(${wNum},${idx},'mistakes',event)">Mistakes ${ist.mistakes.length>0?`<span style="color:#dc2626;font-size:0.55rem;">(${ist.mistakes.length})</span>`:''}</button>
+      </div>
+      <div class="panel-section active" id="ptab-details-w${wNum}-${idx}">
+        <div class="confidence-section">
+          <div class="panel-label">Skill Confidence</div>
+          <div class="stars" id="stars-w${wNum}-${idx}">
+            ${[1,2,3,4,5].map(s=>`<span class="star${ist.conf>=s?' lit':''}" onclick="setConf(${wNum},${idx},${s},event)">★</span>`).join('')}
+          </div>
+          <div class="conf-labels">
+            <span class="conf-feedback" id="cflabel-w${wNum}-${idx}">${confLabels[ist.conf]||confLabels[0]}</span>
+          </div>
+        </div>
+        <div class="tags-section">
+          <div class="panel-label">Quick Tag</div>
+          <div class="tags-wrap">
+            ${['Easy','Medium','Hard','To Review','Need Help'].map((t,ti)=>{
+              const cls=['t-easy','t-medium','t-hard','t-todo','t-review'][ti];
+              const active=ist.tag===t?'active '+cls:'';
+              return `<span class="tag ${active}" onclick="setTag(${wNum},${idx},'${t}',event)">${t}</span>`;
+            }).join('')}
+          </div>
+        </div>
+        <div class="comment-section">
+          <div class="panel-label">Notes & Insights</div>
+          <textarea class="note" placeholder="Add a note, formula, or aha-moment..." oninput="setNote(${wNum},${idx},this.value)">${ist.note||''}</textarea>
+        </div>
+      </div>
+      <div class="panel-section" id="ptab-mastery-w${wNum}-${idx}">
+        <div>
+          <div class="panel-label">Mastery Level</div>
+          <div class="mastery-stars" id="mstars-w${wNum}-${idx}">
+            ${[1,2,3,4,5].map(s=>`<span class="mstar${ist.conf>=s?' lit':''}" onclick="setMastery(${wNum},${idx},${s},event)">★</span>`).join('')}
+          </div>
+          <div class="mastery-label-row" id="mlabel-w${wNum}-${idx}">
+            ${ist.conf>0?`<span class="level">${MASTERY_LABELS[ist.conf]}</span> <span style="color:var(--text-3)">— ${MASTERY_DESC[ist.conf]}</span>`:'<span style="color:var(--text-3)">— tap a star to rate</span>'}
+          </div>
+        </div>
+        <div>
+          <div class="panel-label">Practice Attempts</div>
+          <div class="attempts-row">
+            <div class="attempt-count-big" id="attempts-w${wNum}-${idx}">${ist.attempts}</div>
+            <button class="attempt-inc" onclick="addAttempt(${wNum},${idx},event)">+ 1 Attempt</button>
+            <button class="attempt-inc" onclick="resetAttempts(${wNum},${idx},event)" style="margin-left:auto;color:var(--text-3)">↺ Reset</button>
+          </div>
+          <div class="diff-score-bar" id="dsbar-w${wNum}-${idx}">
+            <div class="diff-score-bar-label">
+              <span>Difficulty Score = Attempts × (5 − Stars)</span>
+              <span id="dsscore-w${wNum}-${idx}">${ist.attempts>0||ist.conf>0 ? ist.attempts*(5-ist.conf) : '—'}</span>
+            </div>
+            <div class="diff-score-bar-track">
+              <div class="diff-score-bar-fill" id="dsfill-w${wNum}-${idx}" style="width:${Math.min(100,(ist.attempts*(5-ist.conf)/40)*100)}%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-section" id="ptab-recall-w${wNum}-${idx}">
+        <div>
+          <div class="panel-label">Quick Recall — write from memory before rating</div>
+          <div class="recall-box">
+            <div class="recall-prompt-bar">Outcome: <strong>${text}</strong></div>
+            <textarea class="recall-textarea" placeholder="Write everything you remember about this outcome…" oninput="setRecall(${wNum},${idx},this.value)">${ist.recall||''}</textarea>
+          </div>
+        </div>
+      </div>
+      <div class="panel-section" id="ptab-mistakes-w${wNum}-${idx}">
+        <div>
+          <div class="panel-label">Mistake Log</div>
+          <div class="mistake-list" id="mlist-w${wNum}-${idx}">
+            ${ist.mistakes.length===0?'<div style="font-size:0.65rem;color:var(--text-3);font-style:italic;">No mistakes logged yet.</div>':ist.mistakes.map((m,mi)=>`<div class="mistake-entry"><span class="me-num">${String(mi+1).padStart(2,'0')}</span><span class="me-text">${m}</span><button class="me-del" onclick="removeMistake(${wNum},${idx},${mi},event)">×</button></div>`).join('')}
+          </div>
+          <div class="mistake-add-row">
+            <input class="mistake-input" id="minput-w${wNum}-${idx}" placeholder="What did you get wrong or forget?" onkeydown="if(event.key==='Enter')addMistake(${wNum},${idx},event)">
+            <button class="mistake-log-btn" onclick="addMistake(${wNum},${idx},event)">Log Mistake</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── QUEUE ──
+function showQueue(tag) {
+  const weekKey = tag==='Need Help' ? 'need-help' : 'to-review';
+  currentWeek = weekKey;
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('queuePanel').style.display = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchInput').disabled = true;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.queue-btn').forEach(t => t.classList.toggle('active', t.dataset.week===weekKey));
+  const panel = document.getElementById('queuePanel');
+  const color = tag==='Need Help' ? '#7c6af5' : '#2e8fe0';
+  const emoji = tag==='Need Help' ? '🆘' : '🔁';
+  const weeks = getCurrentWeeks();
+  let results = [];
+  weeks.forEach(week => {
+    week.items.forEach((text,i) => {
+      if (getItemState(week.num,i).tag===tag) results.push({week,text,i,ist:getItemState(week.num,i)});
+    });
+  });
+  if (results.length===0) {
+    panel.innerHTML = `<div style="text-align:center;padding:4rem 2rem;">
+      <div style="font-size:2rem;margin-bottom:1rem;opacity:0.3;">${emoji}</div>
+      <div style="font-family:Fraunces,serif;font-size:1.1rem;font-weight:300;color:var(--text-2);margin-bottom:6px;">No items tagged "${tag}"</div>
+      <div style="font-size:0.72rem;color:var(--text-3);">Tag outcomes while studying to build your queue.</div></div>`;
+    return;
+  }
+  const confLabels=['— tap a star to rate','😵 Confused','😕 Getting started','🤔 Getting there','😊 Almost got it','🏆 Mastered'];
+  let html=`<div class="queue-header-bar"><div class="week-pip" style="background:${color}"></div><div class="queue-title">${emoji} ${tag}</div><span style="margin-left:auto;font-size:0.6rem;color:var(--text-3);">${results.length} item${results.length!==1?'s':''}</span></div>
+  <div class="queue-desc">${tag==="Need Help"?"Outcomes flagged for extra help. Rate confidence, add notes, untag once resolved.":"Outcomes to revisit. Rate, reflect, untag when confident."}</div>`;
+  results.forEach(({week,text,i,ist}) => {
+    const cardId=`qcard-w${week.num}-${i}`;
+    html+=`<div class="queue-item" id="${cardId}" style="border-left:2px solid ${color};padding:0;overflow:hidden;">
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+            <span style="font-size:0.58rem;font-weight:500;letter-spacing:0.1em;color:${week.color};text-transform:uppercase;">Week ${week.num}</span>
+            <span style="font-size:0.58rem;color:var(--text-3);">#${String(i+1).padStart(2,'0')}</span>
+            ${ist.done?'<span style="font-size:0.6rem;color:#12996a;font-weight:500;">✓ Done</span>':'<span style="font-size:0.6rem;color:var(--text-3);">Pending</span>'}
+          </div>
+          <div style="font-size:0.8rem;color:var(--text);line-height:1.65;">${text}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0;align-items:flex-end;">
+          <button class="untag-btn" onclick="clearTag(${week.num},${i},'${tag}')" style="color:var(--text-3);">Untag</button>
+          <button class="untag-btn" id="${cardId}-btn" onclick="toggleQueuePanel('${cardId}')" style="color:${color};border-color:${color}44;">▾ Details</button>
+        </div>
+      </div>
+      <div id="${cardId}-panel" style="display:none;border-top:1px solid var(--border);background:var(--bg);padding:1rem 1.25rem;flex-direction:column;gap:1rem;">
+        <div><div class="panel-label">Skill Confidence</div>
+          <div style="display:flex;gap:4px;" id="qstars-w${week.num}-${i}">
+            ${[1,2,3,4,5].map(s=>`<span class="star${ist.conf>=s?' lit':''}" onclick="setQConf(${week.num},${i},${s},'${tag}')" style="font-size:1.1rem;cursor:pointer;">★</span>`).join('')}
+          </div>
+          <span class="conf-feedback" id="qcflabel-w${week.num}-${i}">${confLabels[ist.conf]||confLabels[0]}</span>
+        </div>
+        <div><div class="panel-label">Quick Tag</div>
+          <div class="tags-wrap" id="qtags-w${week.num}-${i}">
+            ${['Easy','Medium','Hard','To Review','Need Help'].map((t,ti)=>{
+              const cls=['t-easy','t-medium','t-hard','t-todo','t-review'][ti];
+              const active=ist.tag===t?'active '+cls:'';
+              return `<span class="tag ${active}" onclick="setQTag(${week.num},${i},'${t}','${tag}')">${t}</span>`;
+            }).join('')}
+          </div>
+        </div>
+        <div><div class="panel-label">Notes & Insights</div>
+          <textarea class="note" placeholder="Add a note..." oninput="setNote(${week.num},${i},this.value)" style="min-height:60px;">${ist.note||''}</textarea>
+        </div>
+      </div>
+    </div>`;
+  });
+  panel.innerHTML = html;
+  updateQueueCounts();
+}
+
+function toggleQueuePanel(cardId) {
+  const p=document.getElementById(cardId+'-panel');
+  const btn=document.getElementById(cardId+'-btn');
+  if(!p) return;
+  const isOpen=p.style.display==='flex';
+  p.style.display=isOpen?'none':'flex';
+  p.style.flexDirection='column';
+  if(btn) btn.textContent=isOpen?'▾ Details':'▴ Details';
+}
+function clearTag(w,i,tag) {
+  const ist=getItemState(w,i);
+  if(ist.tag===tag){ ist.tag=''; saveState(); updateStats(); showQueue(tag); }
+}
+function setQConf(w,i,val,tag) {
+  const ist=getItemState(w,i); ist.conf=val; saveState();
+  const confLabels=['— tap a star to rate','😵 Confused','😕 Getting started','🤔 Getting there','😊 Almost got it','🏆 Mastered'];
+  document.querySelectorAll(`#qstars-w${w}-${i} .star`).forEach((s,idx)=>s.classList.toggle('lit',idx<val));
+  const lbl=document.getElementById(`qcflabel-w${w}-${i}`); if(lbl) lbl.textContent=confLabels[val]||confLabels[0];
+  updateStats();
+}
+function setQTag(w,i,newTag,curTag) {
+  const ist=getItemState(w,i); ist.tag=ist.tag===newTag?'':newTag; saveState();
+  const clsMap={'Easy':'t-easy','Medium':'t-medium','Hard':'t-hard','To Review':'t-todo','Need Help':'t-review'};
+  const qw=document.getElementById(`qtags-w${w}-${i}`);
+  if(qw) qw.querySelectorAll('.tag').forEach(el=>{ el.classList.remove('active','t-easy','t-medium','t-hard','t-todo','t-review'); if(el.textContent===ist.tag) el.classList.add('active',clsMap[ist.tag]||''); });
+  if(ist.tag!==curTag){updateStats();showQueue(curTag);}else updateStats();
+}
+
+// ── SAVE/LOAD JSON ──
+function saveProgress() {
+  const data = { subjects: SUBJECTS, state: allState, currentSubjectId, version: 3 };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `tracker_${Date.now()}.json`;
+  a.click();
+}
+function loadProgress(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (d.version === 3 && d.subjects) {
+        SUBJECTS = d.subjects;
+        allState = d.state || {};
+        currentSubjectId = d.currentSubjectId || Object.keys(SUBJECTS)[0];
+        saveState();
+        const sub = getCurrentSubject();
+        document.getElementById('eyebrowSubject').textContent = sub.name;
+        document.getElementById('headerTitle').innerHTML = sub.emoji ? `${sub.emoji} <em>${sub.name}</em>` : `<em>${sub.name}</em>`;
+        buildSubjectBar();
+        rebuildWeekNav();
+        buildUI();
+        updateStats();
+        showWeek('all');
+      }
+    } catch(err) { alert('Could not load file.'); }
+  };
+  reader.readAsText(file);
+}
+function downloadReport() {
+  alert('Report download: complete all outcomes first!');
+}
+
+// ── ROTATE QUOTE ──
+function rotateQuote() {
+  const pool = getQuotesForSubject();
+  const q = pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('quoteText').innerHTML = `"${q.q}" <cite>— ${q.a}</cite>`;
+}
+
+// ── INIT ──
+loadState();
+initDefaultSubjects();
+const sub = getCurrentSubject();
+document.getElementById('eyebrowSubject').textContent = sub.name;
+document.getElementById('headerTitle').innerHTML = sub.emoji ? `${sub.emoji} <em>${sub.name}</em>` : `<em>${sub.name}</em>`;
+document.documentElement.style.setProperty('--accent', sub.color || '#7c6af5');
+document.getElementById('accentBar').style.background = sub.color || '#7c6af5';
+buildSubjectBar();
+rebuildWeekNav();
+buildUI();
+updateStats();
+showWeek('all');
+rotateQuote();
+setInterval(rotateQuote, 30000);
+// ── PWA ──
+(function initPWA() {
+  try {
+
+  // Safe UTF-8 → base64 (avoids deprecated unescape)
+  function toB64(str) {
+    try {
+      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        (_, p1) => String.fromCharCode(parseInt(p1, 16))));
+    } catch(_) { return btoa(str); }
+  }
+
+  // ── LT Monogram SVG icon generator ──
+  function makeLTSvg(size, bg, fg) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <rect width="${size}" height="${size}" rx="${size*0.18}" fill="${bg}"/>
+      <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
+        font-family="Georgia,serif" font-size="${size*0.42}" font-weight="400"
+        letter-spacing="-${size*0.025}" fill="${fg}">LT</text>
+    </svg>`;
+  }
+
+  function svgToDataUri(svg) {
+    return 'data:image/svg+xml;base64,' + toB64(svg);
+  }
+
+  // Set favicon + apple touch icon
+  const icon192Uri = svgToDataUri(makeLTSvg(192, '#0d0f14', '#f5f6f8'));
+  const icon512Uri = svgToDataUri(makeLTSvg(512, '#0d0f14', '#f5f6f8'));
+  const iconFavUri = svgToDataUri(makeLTSvg(32,  '#0d0f14', '#f5f6f8'));
+
+  const favEl = document.getElementById('faviconSvg');
+  const atiEl = document.getElementById('appleTouchIcon');
+  if (favEl) favEl.href = iconFavUri;
+  if (atiEl) atiEl.href = icon192Uri;
+
+  // ── Inline manifest via data URI ──
+  const manifest = {
+    name: 'Learning Tracker',
+    short_name: 'LT',
+    description: 'Track, rate, reflect and complete your learning outcomes.',
+    start_url: '.',
+    display: 'standalone',
+    background_color: '#f5f6f8',
+    theme_color: '#0d0f14',
+    orientation: 'portrait-primary',
+    icons: [
+      { src: icon192Uri, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+      { src: icon512Uri, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' },
+    ]
+  };
+  const manifestUri = 'data:application/manifest+json;base64,' + toB64(JSON.stringify(manifest));
+  const mfEl = document.getElementById('pwaManifest');
+  if (mfEl) mfEl.href = manifestUri;
+
+  // ── Service Worker via blob URL ──
+  if ('serviceWorker' in navigator) {
+    const CACHE_NAME = 'lt-v1';
+    const swCode = [
+      "const CACHE='" + CACHE_NAME + "';",
+      "self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./'])).catch(()=>{}));self.skipWaiting();});",
+      "self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});",
+      "self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{const cl=res.clone();caches.open(CACHE).then(c=>c.put(e.request,cl)).catch(()=>{});return res;}).catch(()=>caches.match(e.request))));});"
+    ].join('\n');
+    try {
+      const swBlob = new Blob([swCode], { type: 'application/javascript' });
+      const swUrl  = URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swUrl, { scope: './' }).catch(() => {});
+    } catch(_) {}
+  }
+
+  // ── Install prompt ──
+  let _deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', ev => {
+    ev.preventDefault();
+    _deferredPrompt = ev;
+    const btn = document.getElementById('pwaInstallBtn');
+    if (btn) btn.classList.add('visible');
+  });
+
+  window.addEventListener('appinstalled', () => {
+    const btn = document.getElementById('pwaInstallBtn');
+    if (btn) btn.classList.remove('visible');
+    _deferredPrompt = null;
+    showPwaToast('✓ App installed — find it on your home screen');
+  });
+
+  window.pwaInstall = async function() {
+    if (_deferredPrompt) {
+      _deferredPrompt.prompt();
+      const { outcome } = await _deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        const btn = document.getElementById('pwaInstallBtn');
+        if (btn) btn.classList.remove('visible');
+        _deferredPrompt = null;
+      }
+    } else {
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const msg = isIOS
+        ? '📲 Tap the Share button below, then "Add to Home Screen"'
+        : '📲 Open your browser menu and choose "Install app" or "Add to Home Screen"';
+      showPwaToast(msg, 4500);
+    }
+  };
+
+  function showPwaToast(msg, duration) {
+    duration = duration || 3000;
+    const existing = document.querySelector('.pwa-toast');
+    if (existing) existing.remove();
+    const t = document.createElement('div');
+    t.className = 'pwa-toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { if (t.parentNode) t.remove(); }, duration + 100);
+  }
+
+  // iOS: show install button since beforeinstallprompt never fires
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  if (isIOS && !isStandalone) {
+    const btn = document.getElementById('pwaInstallBtn');
+    if (btn) btn.classList.add('visible');
+  }
+
+  } catch(_) { /* PWA init failed silently — app still fully functional */ }
+})();
+
+</script>
+
+</body>
+</html>
