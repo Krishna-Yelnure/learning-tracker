@@ -3054,7 +3054,7 @@ setInterval(rotateQuote, 30000);
     name: 'Learning Tracker',
     short_name: 'LT',
     description: 'Track, rate, reflect and complete your learning outcomes.',
-    start_url: location.pathname,
+    start_url: location.href,
     display: 'standalone',
     background_color: '#f5f6f8',
     theme_color: '#0d0f14',
@@ -3064,7 +3064,8 @@ setInterval(rotateQuote, 30000);
       { src: icon512Uri, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' },
     ]
   };
-  const manifestUri = 'data:application/manifest+json;base64,' + toB64(JSON.stringify(manifest));
+  const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+  const manifestUri = URL.createObjectURL(manifestBlob);
   const mfEl = document.getElementById('pwaManifest');
   if (mfEl) mfEl.href = manifestUri;
 
