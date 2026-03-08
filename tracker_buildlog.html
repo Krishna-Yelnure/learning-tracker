@@ -416,12 +416,12 @@
     <div style="font-size:0.7rem;color:var(--text-3);margin-top:0.5rem;">track · rate · reflect · complete</div>
     <div class="doc-meta">
       <div>Current file &nbsp;<span>index.html</span></div>
-      <div>Sessions &nbsp;<span>4</span></div>
-      <div>Versions &nbsp;<span>v21 → v30</span></div>
-      <div>Last updated &nbsp;<span>Session 4</span></div>
+      <div>Sessions &nbsp;<span>5</span></div>
+      <div>Versions &nbsp;<span>v21 → v31</span></div>
+      <div>Last updated &nbsp;<span>Session 5</span></div>
     </div>
     <div class="rating-badge">
-      <div class="rating-num">9.7</div>
+      <div class="rating-num">9.9</div>
       <div>
         <div class="rating-stars">★★★★★</div>
         <div style="font-size:0.55rem;color:var(--text-3);margin-top:1px;">current rating / 10</div>
@@ -436,6 +436,7 @@
     <a href="#" class="nav-link" onclick="navScrollTo('build-history-s2',this);return false;">Session 2</a>
     <a href="#" class="nav-link" onclick="navScrollTo('build-history-s3',this);return false;">Session 3</a>
     <a href="#" class="nav-link" onclick="navScrollTo('build-history-s4',this);return false;">Session 4</a>
+    <a href="#" class="nav-link" onclick="navScrollTo('build-history-s5',this);return false;">Session 5</a>
     <a href="#" class="nav-link" onclick="navScrollTo('next-session',this);return false;">Next Session</a>
     <a href="#" class="nav-link" onclick="navScrollTo('roadmap',this);return false;">Full Roadmap</a>
     <a href="#" class="nav-link" onclick="navScrollTo('pwa',this);return false;">PWA Notes</a>
@@ -701,43 +702,64 @@
 
   </div>
 
+  <!-- Session 5 -->
+  <div class="section" id="build-history-s5">
+    <div class="section-label">Session 5</div>
+    <div class="section-title">Build history — session 5</div>
+
+    <div class="version-block">
+      <div class="version-header">
+        <span class="version-tag v-purple">v31</span>
+        <span class="version-name">🍅 Pomodoro floating widget + Study Hours stat</span>
+        <span class="version-file">index.html</span>
+      </div>
+      <div class="version-body">
+        <ul class="change-list">
+          <li><strong>🍅 Pomodoro widget — floating, draggable</strong> — fixed-position widget (bottom-right default); full mouse + touch drag with viewport clamping; <code>cursor:grab</code> on header, <code>cursor:grabbing</code> while dragging; <code>.dragging</code> class elevates box-shadow; survives all week/subject navigation without resetting</li>
+          <li><strong>Circular ring countdown</strong> — SVG with 56px radius track + animated fill; <code>stroke-dashoffset</code> driven by <code>secsLeft / secsTotal</code> fraction; colour-coded: red for Focus, green for Short Break, blue for Long Break; Fraunces serif time display centred absolutely over ring; transitions with <code>1s linear</code> tick</li>
+          <li><strong>3 mode tabs — Focus / Short Break / Long Break</strong> — pill group mirrors toolbar tab style; auto-advances on phase complete: work → short break → (after cycle) long break → work; mode switch blocked while running to prevent state corruption</li>
+          <li><strong>4-session cycle with session dots</strong> — configurable (default 4); active dot pulses via <code>@keyframes pomoPulse</code>; completed work dots turn red, break dots not tracked in dots; dot count re-renders on settings change; <code>pomoCyclePos</code> resets to 0 after long break</li>
+          <li><strong>Play / Pause / Reset / Skip controls</strong> — Play → Pause text swap; button turns red when running; Reset restores mode duration without clearing cycle; Skip forces <code>secsLeft = 0</code> triggering phase completion logic immediately</li>
+          <li><strong>Minimise → floating trigger button</strong> — minimise collapses widget; <code>#pomodoroTrigger</code> circular 46px button appears bottom-right; shows live countdown below emoji via <code>.trigger-time</code> span; turns red when timer running; click re-opens full widget</li>
+          <li><strong>Sound alerts</strong> — Web Audio API; 3-tone chime on work-complete (descending 880→660→440 Hz) and break-complete (ascending 440→550→660 Hz); 0.15 gain with exponential ramp; silenceable via settings checkbox; graceful try/catch if AudioContext blocked</li>
+          <li><strong>Session log in localStorage</strong> — <code>tracker_pomodoro_log</code>; each entry: <code>{ subjectId, subjectName, minutes, type, date, time }</code>; today's log rendered inside widget with colour pip, label, subject name, time; max 200 entries, newest first</li>
+          <li><strong>Settings panel</strong> — toggleable via ⚙ button; inputs for Focus / Short / Long duration and sessions per cycle; all changes take effect immediately on next reset; sound toggle; settings persisted to <code>tracker_pomodoro_settings</code> localStorage</li>
+          <li><strong>🍅 Study Hours stat cell added to stats strip</strong> — 5th column (<code>grid-template-columns: repeat(5,1fr)</code>); shows total focus minutes for <em>current subject</em> converted to hours with 1 decimal; updates on subject switch and on session completion; clickable → opens Pomodoro widget; <code>updateStudyHoursStat()</code> exposed on <code>window</code> and called from <code>switchSubject()</code></li>
+          <li><strong>Phase A complete</strong> — Streak ✅ · Exam Countdown ✅ · Pomodoro ✅ — all three habit-layer features shipped; rating 9.7 → 9.9</li>
+        </ul>
+      </div>
+    </div>
+
   <div class="section" id="next-session">
     <div class="section-label">Planned</div>
-    <div class="section-title">Next session — 🍅 Pomodoro widget</div>
+    <div class="section-title">Next session — Phase B: Intelligence layer</div>
 
-    <div class="callout">
-      <strong>Attach:</strong> <code>index.html</code> — always the source of truth. This is the last Phase A item.
+    <div class="callout green">
+      <strong>Phase A complete.</strong> Streak ✅ · Exam Countdown ✅ · Pomodoro ✅ — all habit-layer features shipped. Rating: 9.9/10.
     </div>
 
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:1.25rem;">
 
       <div class="phase-block">
-        <div class="phase-header" style="background:#fdf2f8;border-bottom-color:#fce7f3;">
-          <div class="phase-num" style="background:#fce7f3;color:#9d174d;">🍅</div>
-          <div class="phase-title">Pomodoro floating widget</div>
-          <span class="pill pill-next" style="margin-left:auto;">Phase A final</span>
+        <div class="phase-header" style="background:#eff6ff;border-bottom-color:#dbeafe;">
+          <div class="phase-num" style="background:#dbeafe;color:#1e40af;">🔁</div>
+          <div class="phase-title">Spaced repetition scheduler</div>
+          <span class="pill pill-next" style="margin-left:auto;">Next up</span>
         </div>
         <div class="phase-body">
           <div class="phase-items">
             <div class="phase-item">
               <span class="phase-icon">→</span>
               <div class="phase-item-text">
-                <strong>Floating draggable 25/5 timer, fixed position, survives week navigation</strong>
-                <span>Bottom-right by default. Drag to reposition. Minimises to a small pill when collapsed.</span>
+                <strong>Rating → auto-schedule next review date</strong>
+                <span>1★=1 day, 2★=2 days, 3★=4 days, 4★=8 days, 5★=14 days. Stored per outcome in state.</span>
               </div>
             </div>
             <div class="phase-item">
               <span class="phase-icon">→</span>
               <div class="phase-item-text">
-                <strong>4-session cycle: 4 × 25 min → 15 min long break</strong>
-                <span>Visual session dots showing progress through the cycle. Optional audio cue on transition.</span>
-              </div>
-            </div>
-            <div class="phase-item">
-              <span class="phase-icon">→</span>
-              <div class="phase-item-text">
-                <strong>Session log stored per subject</strong>
-                <span><code>{ subject, week, duration, timestamp }</code> in localStorage — unlocks a Study Hours stat cell in the stats strip.</span>
+                <strong>"Due Today" queue</strong>
+                <span>Surfaces outcomes past their review date at top of queue panel. Re-rating updates schedule.</span>
               </div>
             </div>
           </div>
@@ -746,31 +768,36 @@
 
       <div class="phase-block">
         <div class="phase-header" style="background:#eff6ff;border-bottom-color:#dbeafe;">
-          <div class="phase-num" style="background:#dbeafe;color:#1e40af;">B</div>
-          <div class="phase-title">Phase B — Intelligence layer</div>
-          <span class="pill pill-planned" style="margin-left:auto;">After Pomodoro</span>
+          <div class="phase-num" style="background:#dbeafe;color:#1e40af;">📈</div>
+          <div class="phase-title">Confidence sparklines</div>
+          <span class="pill pill-planned" style="margin-left:auto;">Phase B</span>
         </div>
         <div class="phase-body">
           <div class="phase-items">
             <div class="phase-item">
-              <span class="phase-icon">🔁</span>
+              <span class="phase-icon">→</span>
               <div class="phase-item-text">
-                <strong>Spaced repetition scheduler</strong>
-                <span>Low-confidence outcomes resurface sooner. Based on stars + last review date.</span>
+                <strong>Store rating history per outcome (not overwrite)</strong>
+                <span>Each re-rating appended with timestamp. Tiny SVG sparkline rendered per outcome row showing trend.</span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" style="background:#fdf2f8;border-bottom-color:#fce7f3;">
+          <div class="phase-num" style="background:#fce7f3;color:#9d174d;">🤖</div>
+          <div class="phase-title">AI recall checker (Claude API)</div>
+          <span class="pill pill-planned" style="margin-left:auto;">Phase B</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-items">
             <div class="phase-item">
-              <span class="phase-icon">📈</span>
+              <span class="phase-icon">→</span>
               <div class="phase-item-text">
-                <strong>Confidence sparklines</strong>
-                <span>Tiny trend line per week card showing confidence over time.</span>
-              </div>
-            </div>
-            <div class="phase-item">
-              <span class="phase-icon">🤖</span>
-              <div class="phase-item-text">
-                <strong>AI recall checker</strong>
-                <span>Claude API in the Recall tab — submit recall text, get feedback on accuracy and gaps.</span>
+                <strong>Recall tab → submit free-text answer → Claude grades it</strong>
+                <span>Claude API call with outcome text + student answer. Returns accuracy score + gap feedback. API key stored in localStorage.</span>
               </div>
             </div>
           </div>
@@ -795,7 +822,7 @@
         <div class="phase-header">
           <div class="phase-num" style="background:#dcfce7;color:#166534;">A</div>
           <div class="phase-title">Habit Layer — <em style="font-family:Fraunces,serif;font-weight:300;">make students come back daily</em></div>
-          <div class="phase-subtitle">Estimated rating after: 9.5</div>
+          <div class="phase-subtitle"><span class="pill pill-done">Complete ✅</span> &nbsp; Rating: 9.9</div>
         </div>
         <div class="phase-body">
           <div class="phase-items">
@@ -1008,22 +1035,25 @@
 - `openDeleteConfirm(title, body, callback)` — generic confirm modal for week + outcome deletes
 - 🔥 Streak counter: `tracker_streak` localStorage, amber badge in header, fires on toggleDone
 - ⏳ Exam countdown: `tracker_exam_dates` per subject, urgency tiers (grey/amber/red), header display
-- <span class="pv">Current rating: 9.7/10</span>
+- 🍅 Pomodoro widget: draggable floating timer, 3 modes (Focus/Short/Long), 4-session cycle with dots, circular SVG ring, Web Audio chime, minimise → trigger pill, session log in `tracker_pomodoro_log` localStorage, configurable durations via settings panel
+- 🍅 Study Hours stat: 5th stat cell, shows focus hours for current subject, updates on subject switch, clickable to open Pomodoro
+- <span class="pv">Current rating: 9.9/10</span>
 
-<span class="ph">**Next session — Phase A final:**</span>
-- 🍅 Pomodoro floating widget: draggable, 25/5 timer, 4-session cycle, session log per subject, unlocks Study Hours stat
+<span class="ph">**Phase A complete. Next: Phase B (Intelligence):**</span>
+- 🔁 Spaced repetition scheduler (rating → review date, "Due Today" queue)
+- 📈 Confidence sparklines (rating history per outcome, SVG trend line)
+- 🤖 AI recall checker (Claude API in Recall tab, accuracy + gap feedback)
 
-<span class="ph">**After Pomodoro (brainstormed, not yet started):**</span>
-- Phase B (Intelligence): 🔁 Spaced repetition scheduler, 📈 Confidence sparklines, 🤖 AI recall checker (Claude API)
-- Phase C (Power): 📊 Study analytics dashboard
+<span class="ph">**Phase C (after B):**</span>
+- 📊 Study analytics dashboard
 
 <span class="ph">**Instruction:**</span> [describe what you want to build or fix]</div>
   </div>
 
   <!-- Footer -->
   <div class="doc-footer">
-    <div>Learning Tracker Build Log &nbsp;·&nbsp; Session 4</div>
-    <div>v21 → v30 &nbsp;·&nbsp; Rating 9.7/10</div>
+    <div>Learning Tracker Build Log &nbsp;·&nbsp; Session 5</div>
+    <div>v21 → v31 &nbsp;·&nbsp; Rating 9.9/10</div>
   </div>
 
 </div>

@@ -1238,6 +1238,300 @@
   }
   .modal-submit:hover { opacity: 0.8; }
 
+  /* ── STATS STRIP 5-col ── */
+  .stats-strip { grid-template-columns: repeat(5,1fr); }
+  #studyHoursCell:hover { background: var(--bg); }
+
+  /* ── POMODORO WIDGET ── */
+  #pomodoroWidget {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 500;
+    width: 280px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--rlg);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.16), 0 2px 8px rgba(0,0,0,0.08);
+    font-family: 'JetBrains Mono', monospace;
+    user-select: none;
+    transition: box-shadow 0.2s;
+    display: none;
+  }
+  #pomodoroWidget.open { display: block; }
+  #pomodoroWidget.dragging { box-shadow: 0 20px 60px rgba(0,0,0,0.22); cursor: grabbing; }
+
+  .pomo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid var(--border);
+    cursor: grab;
+    border-radius: var(--rlg) var(--rlg) 0 0;
+  }
+  .pomo-header:active { cursor: grabbing; }
+  .pomo-title {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pomo-title .pomo-emoji { font-size: 0.85rem; }
+  .pomo-header-btns { display: flex; gap: 4px; }
+  .pomo-hbtn {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-3);
+    font-size: 0.7rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .pomo-hbtn:hover { border-color: var(--border-hi); color: var(--text-2); }
+
+  .pomo-body { padding: 16px 14px 14px; }
+
+  /* Mode tabs */
+  .pomo-modes {
+    display: flex;
+    gap: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 14px;
+  }
+  .pomo-mode-btn {
+    flex: 1;
+    font-size: 0.58rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 4px 2px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: var(--text-3);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .pomo-mode-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 0 0 1px var(--border);
+  }
+
+  /* Timer ring */
+  .pomo-ring-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .pomo-ring-svg { transform: rotate(-90deg); }
+  .pomo-ring-track { fill: none; stroke: var(--border); stroke-width: 4; }
+  .pomo-ring-fill {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear, stroke 0.4s;
+  }
+  .pomo-ring-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+  }
+  .pomo-time-display {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: -0.03em;
+  }
+  .pomo-session-label {
+    font-size: 0.55rem;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-top: 3px;
+  }
+
+  /* Session dots */
+  .pomo-dots {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  .pomo-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.3s, transform 0.2s;
+  }
+  .pomo-dot.done { background: #ef4444; transform: scale(1.1); }
+  .pomo-dot.break-done { background: #22c55e; transform: scale(1.1); }
+  .pomo-dot.active { background: #f97316; animation: pomoPulse 1.5s ease-in-out infinite; }
+
+  @keyframes pomoPulse {
+    0%, 100% { opacity: 1; transform: scale(1.1); }
+    50% { opacity: 0.6; transform: scale(0.95); }
+  }
+
+  /* Controls */
+  .pomo-controls {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .pomo-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    padding: 6px 16px;
+    border-radius: var(--r);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .pomo-btn:hover { border-color: var(--border-hi); color: var(--text); }
+  .pomo-btn.primary {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+    min-width: 72px;
+  }
+  .pomo-btn.primary:hover { opacity: 0.85; }
+  .pomo-btn.primary.running { background: #ef4444; border-color: #ef4444; }
+
+  /* Subject label */
+  .pomo-subject-tag {
+    text-align: center;
+    font-size: 0.6rem;
+    color: var(--text-3);
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+  .pomo-subject-tag span {
+    display: inline-block;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2px 10px;
+    color: var(--text-2);
+  }
+
+  /* Log section */
+  .pomo-log {
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    max-height: 120px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .pomo-log::-webkit-scrollbar { display: none; }
+  .pomo-log-title {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    margin-bottom: 6px;
+  }
+  .pomo-log-entry {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.6rem;
+    color: var(--text-2);
+  }
+  .pomo-log-entry:last-child { border-bottom: none; }
+  .pomo-log-pip {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .pomo-log-time { color: var(--text-3); margin-left: auto; flex-shrink: 0; }
+  .pomo-log-empty { font-size: 0.6rem; color: var(--text-3); font-style: italic; }
+
+  /* Settings panel */
+  .pomo-settings {
+    display: none;
+    padding: 0 14px 14px;
+    border-top: 1px solid var(--border);
+    margin-top: 2px;
+  }
+  .pomo-settings.open { display: block; }
+  .pomo-set-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.62rem;
+    color: var(--text-2);
+  }
+  .pomo-set-row:last-child { border-bottom: none; }
+  .pomo-set-row input[type=number] {
+    width: 48px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 6px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+  .pomo-set-row input[type=number]:focus { border-color: var(--border-hi); }
+
+  /* Floating trigger button (when minimised) */
+  #pomodoroTrigger {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 499;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0;
+  }
+  #pomodoroTrigger.visible { display: flex; }
+  #pomodoroTrigger:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(0,0,0,0.25); }
+  #pomodoroTrigger.running { background: #ef4444; }
+  .trigger-time {
+    font-size: 0.42rem;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 1px;
+    opacity: 0.85;
+  }
+
 </style>
 </head>
 <body>
@@ -1281,6 +1575,10 @@
   <div class="stat-cell"><div class="stat-lbl">Completed</div><div class="stat-num" id="statDone">0</div></div>
   <div class="stat-cell"><div class="stat-lbl">XP Earned</div><div class="stat-num" id="statXP">0</div></div>
   <div class="stat-cell"><div class="stat-lbl">Avg Confidence</div><div class="stat-num" id="statConf">—</div></div>
+  <div class="stat-cell" id="studyHoursCell" style="cursor:pointer;transition:background 0.15s;" onclick="openPomodoro()" title="Open Pomodoro timer">
+    <div class="stat-lbl">🍅 Study Hours</div>
+    <div class="stat-num" id="statStudyHours">0<span style="font-size:1rem;color:var(--text-3);font-family:'JetBrains Mono',monospace;font-weight:300;">h</span></div>
+  </div>
 </div>
 
 <!-- TOOLBAR -->
@@ -1925,6 +2223,7 @@ function switchSubject(id) {
   rotateQuote();
   updateStreakDisplay();
   updateExamCountdown();
+  if (typeof updateStudyHoursStat === 'function') updateStudyHoursStat();
 }
 
 // DATA shim so existing functions work
@@ -3235,7 +3534,427 @@ function updateStreakDisplay() {
     : 'No streak yet — complete an outcome to start one';
 }
 
-// ── EXAM COUNTDOWN ──
+// ── POMODORO ──
+(function initPomodoro() {
+
+  // ── State ──
+  const POMO_KEY   = 'tracker_pomodoro_log';
+  const POMO_SET_KEY = 'tracker_pomodoro_settings';
+  const CIRC = 2 * Math.PI * 56; // 351.86
+
+  let pomoSettings = loadPomoSettings();
+  let pomoMode     = 'work';          // 'work' | 'short' | 'long'
+  let pomoRunning  = false;
+  let pomoTimer    = null;
+  let pomoSecsLeft = pomoSettings.work * 60;
+  let pomoSecsTotal= pomoSettings.work * 60;
+  let pomoCyclePos = 0;               // 0-3 completed work sessions this cycle
+  let pomoMinimised = false;
+  let _pomoSubject  = '';
+
+  // drag state
+  let _dragActive = false, _dragOffX = 0, _dragOffY = 0;
+
+  // ── Settings persistence ──
+  function loadPomoSettings() {
+    try {
+      const s = localStorage.getItem(POMO_SET_KEY);
+      const d = { work: 25, short: 5, long: 15, cycle: 4, sound: true };
+      return s ? Object.assign(d, JSON.parse(s)) : d;
+    } catch(_) { return { work: 25, short: 5, long: 15, cycle: 4, sound: true }; }
+  }
+
+  function savePomoSettings() {
+    try { localStorage.setItem(POMO_SET_KEY, JSON.stringify(pomoSettings)); } catch(_) {}
+  }
+
+  window.applyPomoSettings = function() {
+    pomoSettings.work  = Math.max(1, parseInt(document.getElementById('pomoSetWork').value)  || 25);
+    pomoSettings.short = Math.max(1, parseInt(document.getElementById('pomoSetShort').value) || 5);
+    pomoSettings.long  = Math.max(1, parseInt(document.getElementById('pomoSetLong').value)  || 15);
+    pomoSettings.cycle = Math.max(2, parseInt(document.getElementById('pomoSetCycle').value) || 4);
+    pomoSettings.sound = document.getElementById('pomoSetSound').checked;
+    savePomoSettings();
+    if (!pomoRunning) {
+      pomoSecsLeft = durations()[pomoMode] * 60;
+      pomoSecsTotal = pomoSecsLeft;
+      renderPomoTimer();
+    }
+    renderPomoDots();
+  };
+
+  function durations() {
+    return { work: pomoSettings.work, short: pomoSettings.short, long: pomoSettings.long };
+  }
+
+  // ── Log persistence ──
+  function loadPomoLog() {
+    try { return JSON.parse(localStorage.getItem(POMO_KEY) || '[]'); } catch(_) { return []; }
+  }
+
+  function savePomoLog(log) {
+    try { localStorage.setItem(POMO_KEY, JSON.stringify(log)); } catch(_) {}
+  }
+
+  function addPomoLogEntry(subjectId, subjectName, minutes, type) {
+    const log = loadPomoLog();
+    const now = new Date();
+    log.unshift({
+      subjectId,
+      subjectName,
+      minutes,
+      type,  // 'work' | 'short' | 'long'
+      date: getTodayKey(),
+      time: now.toTimeString().slice(0, 5)
+    });
+    if (log.length > 200) log.length = 200;
+    savePomoLog(log);
+    updateStudyHoursStat();
+  }
+
+  // ── Study hours stat ──
+  window.updateStudyHoursStat = function() {
+    const log = loadPomoLog();
+    const subId = (typeof currentSubjectId !== 'undefined') ? currentSubjectId : null;
+    const mins = log
+      .filter(e => e.type === 'work' && (!subId || e.subjectId === subId))
+      .reduce((s, e) => s + (e.minutes || 0), 0);
+    const hrs = (mins / 60).toFixed(1);
+    const el = document.getElementById('statStudyHours');
+    if (el) el.innerHTML = hrs + '<span style="font-size:1rem;color:var(--text-3);font-family:\'JetBrains Mono\',monospace;font-weight:300;">h</span>';
+  };
+
+  // ── Open / close / minimise ──
+  window.openPomodoro = function() {
+    _pomoSubject = (typeof getCurrentSubject === 'function') ? (getCurrentSubject()?.name || '') : '';
+    const widget = document.getElementById('pomodoroWidget');
+    const trigger = document.getElementById('pomodoroTrigger');
+    widget.classList.add('open');
+    trigger.classList.remove('visible');
+    pomoMinimised = false;
+    syncPomoSettingsUI();
+    renderPomoWidget();
+  };
+
+  window.minimisePomodoro = function() {
+    document.getElementById('pomodoroWidget').classList.remove('open');
+    document.getElementById('pomodoroTrigger').classList.add('visible');
+    pomoMinimised = true;
+  };
+
+  window.closePomodoro = function() {
+    if (pomoRunning) {
+      pomoRunning = false;
+      clearInterval(pomoTimer);
+      pomoTimer = null;
+    }
+    document.getElementById('pomodoroWidget').classList.remove('open');
+    document.getElementById('pomodoroTrigger').classList.remove('visible');
+    pomoMinimised = false;
+  };
+
+  window.togglePomoSettings = function() {
+    document.getElementById('pomoSettings').classList.toggle('open');
+  };
+
+  // ── Mode switching ──
+  window.switchPomoMode = function(mode) {
+    if (pomoRunning) return; // don't allow mid-session
+    pomoMode = mode;
+    pomoSecsLeft = durations()[mode] * 60;
+    pomoSecsTotal = pomoSecsLeft;
+    ['work','short','long'].forEach(m => {
+      const btn = document.getElementById('pomoMode' + m.charAt(0).toUpperCase() + m.slice(1));
+      if (btn) btn.classList.toggle('active', m === mode);
+    });
+    renderPomoTimer();
+    renderPomoRing();
+  };
+
+  // ── Timer control ──
+  window.togglePomodoro = function() {
+    if (pomoRunning) {
+      pausePomodoro();
+    } else {
+      startPomodoro();
+    }
+  };
+
+  function startPomodoro() {
+    pomoRunning = true;
+    _pomoSubject = (typeof getCurrentSubject === 'function') ? (getCurrentSubject()?.name || '') : '';
+    const btn = document.getElementById('pomoPlayBtn');
+    if (btn) { btn.textContent = '⏸ Pause'; btn.classList.add('running'); }
+    const trigger = document.getElementById('pomodoroTrigger');
+    if (trigger) trigger.classList.add('running');
+    pomoTimer = setInterval(tickPomodoro, 1000);
+  }
+
+  function pausePomodoro() {
+    pomoRunning = false;
+    clearInterval(pomoTimer);
+    pomoTimer = null;
+    const btn = document.getElementById('pomoPlayBtn');
+    if (btn) { btn.textContent = '▶ Resume'; btn.classList.remove('running'); }
+    const trigger = document.getElementById('pomodoroTrigger');
+    if (trigger) trigger.classList.remove('running');
+  }
+
+  window.resetPomodoro = function() {
+    pausePomodoro();
+    pomoSecsLeft = durations()[pomoMode] * 60;
+    pomoSecsTotal = pomoSecsLeft;
+    const btn = document.getElementById('pomoPlayBtn');
+    if (btn) { btn.textContent = '▶ Start'; btn.classList.remove('running'); }
+    renderPomoTimer();
+    renderPomoRing();
+  };
+
+  window.skipPomoPhase = function() {
+    pomoSecsLeft = 0;
+    tickPomodoro();
+  };
+
+  function tickPomodoro() {
+    if (pomoSecsLeft <= 0) {
+      // Phase complete
+      clearInterval(pomoTimer);
+      pomoTimer = null;
+      pomoRunning = false;
+
+      const completedMinutes = durations()[pomoMode];
+      const subId = (typeof currentSubjectId !== 'undefined') ? currentSubjectId : 'unknown';
+      const subName = _pomoSubject;
+
+      addPomoLogEntry(subId, subName, completedMinutes, pomoMode);
+
+      if (pomoMode === 'work') {
+        pomoCyclePos++;
+        playPomoSound('work');
+        if (pomoCyclePos >= pomoSettings.cycle) {
+          pomoCyclePos = 0;
+          autoAdvanceMode('long');
+        } else {
+          autoAdvanceMode('short');
+        }
+      } else {
+        playPomoSound('break');
+        autoAdvanceMode('work');
+      }
+      renderPomoDots();
+      renderPomoLog();
+      return;
+    }
+    pomoSecsLeft--;
+    renderPomoTimer();
+    renderPomoRing();
+    renderTriggerTime();
+  }
+
+  function autoAdvanceMode(nextMode) {
+    pomoMode = nextMode;
+    pomoSecsLeft = durations()[nextMode] * 60;
+    pomoSecsTotal = pomoSecsLeft;
+    ['work','short','long'].forEach(m => {
+      const btn = document.getElementById('pomoMode' + m.charAt(0).toUpperCase() + m.slice(1));
+      if (btn) btn.classList.toggle('active', m === nextMode);
+    });
+    const btn = document.getElementById('pomoPlayBtn');
+    if (btn) { btn.textContent = '▶ Start'; btn.classList.remove('running'); }
+    const trigger = document.getElementById('pomodoroTrigger');
+    if (trigger) trigger.classList.remove('running');
+    renderPomoTimer();
+    renderPomoRing();
+  }
+
+  // ── Render helpers ──
+  function fmtSecs(s) {
+    const m = Math.floor(s / 60), sec = s % 60;
+    return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+  }
+
+  function renderPomoTimer() {
+    const el = document.getElementById('pomoTimeDisplay');
+    if (el) el.textContent = fmtSecs(pomoSecsLeft);
+
+    const lbl = document.getElementById('pomoSessionLabel');
+    if (lbl) {
+      if (pomoMode === 'work') lbl.textContent = `Session ${pomoCyclePos + 1} of ${pomoSettings.cycle}`;
+      else if (pomoMode === 'short') lbl.textContent = 'Short break';
+      else lbl.textContent = 'Long break';
+    }
+
+    const subTag = document.getElementById('pomoSubjectTag');
+    if (subTag) subTag.textContent = _pomoSubject || 'No subject';
+  }
+
+  function renderPomoRing() {
+    const fill = document.getElementById('pomoRingFill');
+    if (!fill) return;
+    const frac = pomoSecsTotal > 0 ? pomoSecsLeft / pomoSecsTotal : 0;
+    const offset = CIRC * (1 - frac);
+    fill.style.strokeDashoffset = offset;
+    if (pomoMode === 'work') fill.style.stroke = '#ef4444';
+    else if (pomoMode === 'short') fill.style.stroke = '#22c55e';
+    else fill.style.stroke = '#3b82f6';
+  }
+
+  function renderPomoDots() {
+    const container = document.getElementById('pomoDots');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < pomoSettings.cycle; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'pomo-dot';
+      if (pomoMode === 'work' && i === pomoCyclePos) dot.classList.add('active');
+      else if (i < pomoCyclePos) dot.classList.add('done');
+      container.appendChild(dot);
+    }
+  }
+
+  function renderPomoLog() {
+    const list = document.getElementById('pomoLogList');
+    if (!list) return;
+    const log = loadPomoLog();
+    const today = getTodayKey();
+    const todayLog = log.filter(e => e.date === today);
+    if (!todayLog.length) {
+      list.innerHTML = '<div class="pomo-log-empty">No sessions yet</div>';
+      return;
+    }
+    list.innerHTML = todayLog.map(e => {
+      const color = e.type === 'work' ? '#ef4444' : e.type === 'short' ? '#22c55e' : '#3b82f6';
+      const label = e.type === 'work' ? `${e.minutes}m focus` : e.type === 'short' ? `${e.minutes}m short break` : `${e.minutes}m long break`;
+      return `<div class="pomo-log-entry">
+        <div class="pomo-log-pip" style="background:${color}"></div>
+        <span>${label}</span>
+        <span style="font-size:0.58rem;color:var(--text-3);">${e.subjectName || '?'}</span>
+        <span class="pomo-log-time">${e.time}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function renderTriggerTime() {
+    const el = document.getElementById('triggerTimeDisplay');
+    if (el) el.textContent = fmtSecs(pomoSecsLeft);
+  }
+
+  function renderPomoWidget() {
+    renderPomoTimer();
+    renderPomoRing();
+    renderPomoDots();
+    renderPomoLog();
+  }
+
+  function syncPomoSettingsUI() {
+    const setters = {
+      pomoSetWork: pomoSettings.work,
+      pomoSetShort: pomoSettings.short,
+      pomoSetLong: pomoSettings.long,
+      pomoSetCycle: pomoSettings.cycle
+    };
+    Object.entries(setters).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    });
+    const soundEl = document.getElementById('pomoSetSound');
+    if (soundEl) soundEl.checked = pomoSettings.sound;
+  }
+
+  // ── Sound ──
+  function playPomoSound(type) {
+    if (!pomoSettings.sound) return;
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const freqs = type === 'work' ? [880, 660, 440] : [440, 550, 660];
+      freqs.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.18);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.18 + 0.35);
+        osc.start(ctx.currentTime + i * 0.18);
+        osc.stop(ctx.currentTime + i * 0.18 + 0.4);
+      });
+    } catch(_) {}
+  }
+
+  // ── Drag ──
+  const widget = document.getElementById('pomodoroWidget');
+  const handle = document.getElementById('pomoDragHandle');
+
+  if (handle && widget) {
+    handle.addEventListener('mousedown', function(e) {
+      if (e.target.closest('.pomo-hbtn')) return;
+      _dragActive = true;
+      const rect = widget.getBoundingClientRect();
+      _dragOffX = e.clientX - rect.left;
+      _dragOffY = e.clientY - rect.top;
+      widget.classList.add('dragging');
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!_dragActive) return;
+      let x = e.clientX - _dragOffX;
+      let y = e.clientY - _dragOffY;
+      // keep within viewport
+      x = Math.max(0, Math.min(window.innerWidth - widget.offsetWidth, x));
+      y = Math.max(0, Math.min(window.innerHeight - widget.offsetHeight, y));
+      widget.style.left = x + 'px';
+      widget.style.top  = y + 'px';
+      widget.style.right = 'auto';
+      widget.style.bottom = 'auto';
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (_dragActive) {
+        _dragActive = false;
+        widget.classList.remove('dragging');
+      }
+    });
+
+    // Touch drag
+    handle.addEventListener('touchstart', function(e) {
+      if (e.target.closest('.pomo-hbtn')) return;
+      const touch = e.touches[0];
+      _dragActive = true;
+      const rect = widget.getBoundingClientRect();
+      _dragOffX = touch.clientX - rect.left;
+      _dragOffY = touch.clientY - rect.top;
+      widget.classList.add('dragging');
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function(e) {
+      if (!_dragActive) return;
+      const touch = e.touches[0];
+      let x = touch.clientX - _dragOffX;
+      let y = touch.clientY - _dragOffY;
+      x = Math.max(0, Math.min(window.innerWidth - widget.offsetWidth, x));
+      y = Math.max(0, Math.min(window.innerHeight - widget.offsetHeight, y));
+      widget.style.left = x + 'px';
+      widget.style.top  = y + 'px';
+      widget.style.right = 'auto';
+      widget.style.bottom = 'auto';
+    }, { passive: true });
+
+    document.addEventListener('touchend', function() {
+      if (_dragActive) {
+        _dragActive = false;
+        widget.classList.remove('dragging');
+      }
+    });
+  }
+
+  // ── Init ──
+  updateStudyHoursStat();
+
+})(); // end initPomodoro
+
+
 function getExamDate(subjectId) {
   try {
     const dates = JSON.parse(localStorage.getItem('tracker_exam_dates') || '{}');
@@ -3482,6 +4201,89 @@ function closeDeleteConfirm() {
       <button class="modal-cancel" onclick="closeExamModal()">Cancel</button>
       <button class="modal-cancel" onclick="clearExamDate()" style="color:var(--red);border-color:#fecaca;" id="examClearBtn">Clear</button>
       <button class="modal-submit" onclick="submitExamDate()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- POMODORO TRIGGER BUTTON (minimised state) -->
+<button id="pomodoroTrigger" onclick="openPomodoro()" title="Open Pomodoro timer">
+  🍅
+  <span class="trigger-time" id="triggerTimeDisplay"></span>
+</button>
+
+<!-- POMODORO WIDGET -->
+<div id="pomodoroWidget">
+  <div class="pomo-header" id="pomoDragHandle">
+    <div class="pomo-title"><span class="pomo-emoji">🍅</span> Pomodoro</div>
+    <div class="pomo-header-btns">
+      <button class="pomo-hbtn" onclick="togglePomoSettings()" title="Settings">⚙</button>
+      <button class="pomo-hbtn" onclick="minimisePomodoro()" title="Minimise">−</button>
+      <button class="pomo-hbtn" onclick="closePomodoro()" title="Close">×</button>
+    </div>
+  </div>
+  <div class="pomo-body">
+    <!-- Mode tabs -->
+    <div class="pomo-modes">
+      <button class="pomo-mode-btn active" id="pomoModeWork" onclick="switchPomoMode('work')">Focus</button>
+      <button class="pomo-mode-btn" id="pomoModeShort" onclick="switchPomoMode('short')">Short Break</button>
+      <button class="pomo-mode-btn" id="pomoModeLong" onclick="switchPomoMode('long')">Long Break</button>
+    </div>
+    <!-- Ring timer -->
+    <div class="pomo-ring-wrap">
+      <svg class="pomo-ring-svg" width="130" height="130" viewBox="0 0 130 130">
+        <circle class="pomo-ring-track" cx="65" cy="65" r="56"/>
+        <circle class="pomo-ring-fill" id="pomoRingFill" cx="65" cy="65" r="56"
+          stroke="#ef4444"
+          stroke-dasharray="351.86"
+          stroke-dashoffset="0"/>
+      </svg>
+      <div class="pomo-ring-center">
+        <div class="pomo-time-display" id="pomoTimeDisplay">25:00</div>
+        <div class="pomo-session-label" id="pomoSessionLabel">Session 1 of 4</div>
+      </div>
+    </div>
+    <!-- Session dots -->
+    <div class="pomo-dots" id="pomoDots">
+      <div class="pomo-dot" data-i="0"></div>
+      <div class="pomo-dot" data-i="1"></div>
+      <div class="pomo-dot" data-i="2"></div>
+      <div class="pomo-dot" data-i="3"></div>
+    </div>
+    <!-- Subject tag -->
+    <div class="pomo-subject-tag"><span id="pomoSubjectTag">Mathematics</span></div>
+    <!-- Controls -->
+    <div class="pomo-controls">
+      <button class="pomo-btn" onclick="resetPomodoro()">↺ Reset</button>
+      <button class="pomo-btn primary" id="pomoPlayBtn" onclick="togglePomodoro()">▶ Start</button>
+      <button class="pomo-btn" onclick="skipPomoPhase()">⏭ Skip</button>
+    </div>
+    <!-- Session log -->
+    <div class="pomo-log">
+      <div class="pomo-log-title">Session Log — today</div>
+      <div id="pomoLogList"><div class="pomo-log-empty">No sessions yet</div></div>
+    </div>
+  </div>
+  <!-- Settings panel -->
+  <div class="pomo-settings" id="pomoSettings">
+    <div class="pomo-set-row">
+      <span>Focus duration (min)</span>
+      <input type="number" id="pomoSetWork" value="25" min="1" max="90" onchange="applyPomoSettings()">
+    </div>
+    <div class="pomo-set-row">
+      <span>Short break (min)</span>
+      <input type="number" id="pomoSetShort" value="5" min="1" max="30" onchange="applyPomoSettings()">
+    </div>
+    <div class="pomo-set-row">
+      <span>Long break (min)</span>
+      <input type="number" id="pomoSetLong" value="15" min="1" max="60" onchange="applyPomoSettings()">
+    </div>
+    <div class="pomo-set-row">
+      <span>Sessions per cycle</span>
+      <input type="number" id="pomoSetCycle" value="4" min="2" max="8" onchange="applyPomoSettings()">
+    </div>
+    <div class="pomo-set-row">
+      <span>Sound alerts</span>
+      <input type="checkbox" id="pomoSetSound" checked style="width:auto;cursor:pointer;">
     </div>
   </div>
 </div>
